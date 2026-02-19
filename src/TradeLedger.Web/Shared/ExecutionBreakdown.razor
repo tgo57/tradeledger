@@ -1,0 +1,76 @@
+﻿@using TradeLedger.Web.Models
+
+
+<MudPaper Class="pa-3" Outlined="true" Elevation="0">
+    <MudText Typo="Typo.subtitle2">Executions</MudText>
+
+    <div class="tl-table-scroll tl-exec-scroll">
+        <MudTable Items="@_rows" Dense="true" Hover="true" Class="tl-exec-table">
+            <HeaderContent>
+                <MudTh>Date</MudTh>
+                <MudTh>Time</MudTh>
+                <MudTh>Symbol</MudTh>
+                <MudTh>Description</MudTh>
+                <MudTh Align="Align.Right">Qty</MudTh>
+                <MudTh Align="Align.Right">Price</MudTh>
+                <MudTh Align="Align.Right">Fees</MudTh>
+                <MudTh Align="Align.Right">NetAmount</MudTh>
+                <MudTh Align="Align.Right">Running</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd>@context.ExecutedAt.ToString("yyyy-MM-dd")</MudTd>
+                <MudTd>@context.ExecutedAt.ToString("HH:mm:ss")</MudTd>
+                <MudTd>@context.Symbol</MudTd>
+                <MudTd class="tl-desc">@context.Description</MudTd>
+                <MudTd Align="Align.Right">@context.Quantity.ToString("0.##")</MudTd>
+                <MudTd Align="Align.Right">@context.Price.ToString("0.00")</MudTd>
+                <MudTd Align="Align.Right">@context.Fees.ToString("0.00")</MudTd>
+                <MudTd Align="Align.Right">@context.NetAmount.ToString("0.00")</MudTd>
+                <MudTd Align="Align.Right">@context.Running.ToString("0.00")</MudTd>
+            </RowTemplate>
+        </MudTable>
+    </div>
+
+    <MudDivider Class="my-2" />
+
+    <MudText Typo="Typo.body2">
+        <b>Gross:</b> @_rows.Sum(x => x.NetAmount).ToString("0.00")
+        &nbsp;&nbsp; <b>Fees:</b> @_rows.Sum(x => x.Fees).ToString("0.00")
+        &nbsp;&nbsp; <b>Net After Fees:</b> @_rows.Sum(x => x.NetAmount - x.Fees).ToString("0.00")
+    </MudText>
+</MudPaper>
+
+@code {
+    [Parameter] public List<ExecutionRowDto> Executions { get; set; } = new();
+
+    private List<Row> _rows = new();
+
+    protected override void OnParametersSet()
+    {
+        decimal run = 0m;
+
+        _rows = Executions
+            .OrderBy(x => x.ExecutedAt)
+            .Select(x =>
+            {
+                run += x.NetAmount;
+                return new Row(x, run);
+            })
+            .ToList();
+    }
+
+    private sealed record Row(ExecutionRowDto Base, decimal RunningTotal)
+    {
+        public DateTime ExecutedAt => Base.ExecutedAt;
+        public string Symbol => Base.Symbol;
+        public string Description => Base.Description;
+        public decimal Quantity => Base.Quantity;
+        public decimal Price => Base.Price;
+        public decimal Fees => Base.Fees;
+        public decimal NetAmount => Base.NetAmount;
+
+        public decimal Running => RunningTotal; // OK
+    }
+}
+

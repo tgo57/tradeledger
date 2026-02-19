@@ -1,0 +1,23 @@
+PROJECT: TradeLedger
+STACK: .NET 8, EF Core, SQLite, Blazor Server (later)
+
+CURRENT STATE:
+- Executions import from Schwab CSV works
+- Idempotent import via Fingerprint
+- TradeGroups implemented for Credit Spreads
+- TradeGroupExecutions link table working
+- Numeric columns fixed to REAL (Quantity, Price, Fees, NetAmount)
+- Commands working:
+  - import-schwab
+  - list-exec
+  - scan-options
+  - group-spreads
+  - list-groups (TraderSync-style table in progress)
+  - stats-dte
+  - stats-daily
+- Date model:
+  - TradeGroup.OpenDate = DateTime
+  - TradeGroup.CloseDate = DateTime?
+  - TradeGroup.Expiration = DateOnly
+- Current task:
+  - Step 1: TraderSync-style trade table (status, max risk, return %)

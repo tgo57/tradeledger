@@ -1,0 +1,31 @@
+﻿@using MudBlazor
+
+<MudNavMenu Class="tl-navmenu">
+
+    <MudNavLink Href="/dashboard" Match="NavLinkMatch.All"
+                Icon="@Icons.Material.Filled.Dashboard">
+        @if (DrawerOpen)
+        {
+            <span>Dashboard</span>
+        }
+    </MudNavLink>
+
+    <MudNavLink Href="/trades" Icon="@Icons.Material.Filled.ReceiptLong">
+        @if (DrawerOpen)
+        {
+            <span>Trades</span>
+        }
+    </MudNavLink>
+
+    <MudNavLink Href="/import" Icon="@Icons.Material.Filled.UploadFile">
+        @if (DrawerOpen)
+        {
+            <span>Import</span>
+        }
+    </MudNavLink>
+
+</MudNavMenu>
+
+@code {
+    [Parameter] public bool DrawerOpen { get; set; }
+}

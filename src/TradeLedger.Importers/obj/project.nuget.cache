@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "rcwi68vAyPM=",
+  "success": true,
+  "projectFilePath": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\TradeLedger.Importers.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\alang\\.nuget\\packages\\csvhelper\\33.1.0\\csvhelper.33.1.0.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,27 @@
+﻿<MudPaper Class="pa-4 tl-kpi-card" Elevation="0">
+    <div class="tl-kpi-accent @AccentClass"></div>
+
+    <MudText Typo="Typo.caption" Color="Color.Secondary">
+        @Title
+    </MudText>
+
+    <MudText Typo="Typo.h5" Class="mt-1">
+        @Value
+    </MudText>
+
+    @if (!string.IsNullOrWhiteSpace(Sub))
+    {
+        <MudText Typo="Typo.caption" Color="Color.Secondary">
+            @Sub
+        </MudText>
+    }
+</MudPaper>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public string Value { get; set; } = "";
+
+    // Optional extras (safe defaults)
+    [Parameter] public string Sub { get; set; } = "";
+    [Parameter] public string AccentClass { get; set; } = "accent-blue";
+}

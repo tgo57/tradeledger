@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "dgSpecHash": "EYkUnaq7s5M=",
+  "success": true,
+  "projectFilePath": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\TradeLedger.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\alang\\.nuget\\packages\\csvhelper\\33.1.0\\csvhelper.33.1.0.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.data.sqlite.core\\8.0.12\\microsoft.data.sqlite.core.8.0.12.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.entityframeworkcore\\8.0.12\\microsoft.entityframeworkcore.8.0.12.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\8.0.12\\microsoft.entityframeworkcore.abstractions.8.0.12.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\8.0.12\\microsoft.entityframeworkcore.analyzers.8.0.12.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\8.0.12\\microsoft.entityframeworkcore.relational.8.0.12.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite\\8.0.12\\microsoft.entityframeworkcore.sqlite.8.0.12.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.entityframeworkcore.sqlite.core\\8.0.12\\microsoft.entityframeworkcore.sqlite.core.8.0.12.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\microsoft.extensions.dependencymodel\\8.0.2\\microsoft.extensions.dependencymodel.8.0.2.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\mudblazor\\8.15.0\\mudblazor.8.15.0.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\sqlitepclraw.bundle_e_sqlite3\\2.1.6\\sqlitepclraw.bundle_e_sqlite3.2.1.6.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\sqlitepclraw.core\\2.1.6\\sqlitepclraw.core.2.1.6.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\sqlitepclraw.lib.e_sqlite3\\2.1.6\\sqlitepclraw.lib.e_sqlite3.2.1.6.nupkg.sha512",
+    "C:\\Users\\alang\\.nuget\\packages\\sqlitepclraw.provider.e_sqlite3\\2.1.6\\sqlitepclraw.provider.e_sqlite3.2.1.6.nupkg.sha512"
+  ],
+  "logs": []
+}

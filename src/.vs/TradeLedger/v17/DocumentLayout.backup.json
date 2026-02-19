@@ -1,0 +1,609 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "E:\\Projects\\TradeLedger\\src\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\wwwroot\\css\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\pages\\dashboard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\shared\\executionbreakdown.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\shared\\executionbreakdown.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\shared\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\shared\\mainlayout.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\services\\tradesreadservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\services\\tradesreadservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\alang\\AppData\\Local\\Temp\\.vsdbgsrc\\c5b2729678e1a03df19e65899b4ad191802bd617a3623b940d97308bcc2b98d9\\ClientProxyExtensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\shared\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\shared\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\shared\\kpicard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\shared\\kpicard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\pages\\counter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\pages\\counter.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\app.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\services\\dashboardservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\services\\dashboardservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\models\\executionrowdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\models\\executionrowdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\models\\tradegroupexectotalsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\models\\tradegroupexectotalsdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|e:\\projects\\tradeledger\\src\\tradeledger.core\\models\\tradegroup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|solutionrelative:tradeledger.core\\models\\tradegroup.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{257E81CF-4D0E-4B42-A7EE-F9C82DD70CE8}|TradeLedger.Cli\\TradeLedger.Cli.csproj|e:\\projects\\tradeledger\\src\\tradeledger.cli\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{257E81CF-4D0E-4B42-A7EE-F9C82DD70CE8}|TradeLedger.Cli\\TradeLedger.Cli.csproj|solutionrelative:tradeledger.cli\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{257E81CF-4D0E-4B42-A7EE-F9C82DD70CE8}|TradeLedger.Cli\\TradeLedger.Cli.csproj|e:\\projects\\tradeledger\\src\\tradeledger.cli\\grouping\\groupspreads.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{257E81CF-4D0E-4B42-A7EE-F9C82DD70CE8}|TradeLedger.Cli\\TradeLedger.Cli.csproj|solutionrelative:tradeledger.cli\\grouping\\groupspreads.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|e:\\projects\\tradeledger\\src\\tradeledger.data\\dbfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|solutionrelative:tradeledger.data\\dbfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|e:\\projects\\tradeledger\\src\\tradeledger.importers\\shwab\\schwaboptionparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|solutionrelative:tradeledger.importers\\shwab\\schwaboptionparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|e:\\projects\\tradeledger\\src\\tradeledger.core\\models\\execution.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|solutionrelative:tradeledger.core\\models\\execution.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|e:\\projects\\tradeledger\\src\\tradeledger.core\\models\\tradegroupleg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|solutionrelative:tradeledger.core\\models\\tradegroupleg.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|e:\\projects\\tradeledger\\src\\tradeledger.importers\\shwab\\schwabcsvimporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|solutionrelative:tradeledger.importers\\shwab\\schwabcsvimporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|e:\\projects\\tradeledger\\src\\tradeledger.importers\\csv\\headermap.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|solutionrelative:tradeledger.importers\\csv\\headermap.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|e:\\projects\\tradeledger\\src\\tradeledger.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|solutionrelative:tradeledger.data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\pages\\_host.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\pages\\_host.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|e:\\projects\\tradeledger\\src\\tradeledger.web\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{DE9D2412-09C7-46E4-BB08-DC453DF27725}|TradeLedger.Web\\TradeLedger.Web.csproj|solutionrelative:tradeledger.web\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|e:\\projects\\tradeledger\\src\\tradeledger.data\\appdbcontextdesigntimefactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|solutionrelative:tradeledger.data\\appdbcontextdesigntimefactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|e:\\projects\\tradeledger\\src\\tradeledger.importers\\tastytrade\\tastytradecsvimporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|solutionrelative:tradeledger.importers\\tastytrade\\tastytradecsvimporter.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|e:\\projects\\tradeledger\\src\\tradeledger.core\\models\\tradegroupexecution.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|solutionrelative:tradeledger.core\\models\\tradegroupexecution.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|e:\\projects\\tradeledger\\src\\tradeledger.core\\models\\executionfingerprint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{50D6E887-FA37-425C-BEED-73B966AC50CD}|TradeLedger.Core\\TradeLedger.Core.csproj|solutionrelative:tradeledger.core\\models\\executionfingerprint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|e:\\projects\\tradeledger\\src\\tradeledger.importers\\tastytrade\\tastytradeoptionparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|solutionrelative:tradeledger.importers\\tastytrade\\tastytradeoptionparser.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|e:\\projects\\tradeledger\\src\\tradeledger.importers\\common\\importsummary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|solutionrelative:tradeledger.importers\\common\\importsummary.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|e:\\projects\\tradeledger\\src\\tradeledger.data\\appdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|solutionrelative:tradeledger.data\\appdbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|e:\\projects\\tradeledger\\src\\tradeledger.importers\\tradeledger.importers.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{77FB17E3-0436-474F-99D4-82BB21521D90}|TradeLedger.Importers\\TradeLedger.Importers.csproj|solutionrelative:tradeledger.importers\\tradeledger.importers.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|e:\\projects\\tradeledger\\src\\tradeledger.data\\tradeledger.data.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{87460998-0EC1-4A75-86BC-D15521676AE5}|TradeLedger.Data\\TradeLedger.Data.csproj|solutionrelative:tradeledger.data\\tradeledger.data.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 7,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:129:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "TradeGroupExecTotalsDto.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Models\\TradeGroupExecTotalsDto.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Models\\TradeGroupExecTotalsDto.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Models\\TradeGroupExecTotalsDto.cs",
+              "RelativeToolTip": "TradeLedger.Web\\Models\\TradeGroupExecTotalsDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABNAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T21:58:19.955Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "Dashboard.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Pages\\Dashboard.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Pages\\Dashboard.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Pages\\Dashboard.razor",
+              "RelativeToolTip": "TradeLedger.Web\\Pages\\Dashboard.razor",
+              "ViewState": "AgIAALAAAAAAAAAAAAAwwMAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-12T23:11:58.248Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "KpiCard.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\KpiCard.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Shared\\KpiCard.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\KpiCard.razor",
+              "RelativeToolTip": "TradeLedger.Web\\Shared\\KpiCard.razor",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-12T23:08:35.984Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "MainLayout.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\MainLayout.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Shared\\MainLayout.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\MainLayout.razor",
+              "RelativeToolTip": "TradeLedger.Web\\Shared\\MainLayout.razor",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAADAAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-12T23:49:33.361Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\NavMenu.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Shared\\NavMenu.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\NavMenu.razor",
+              "RelativeToolTip": "TradeLedger.Web\\Shared\\NavMenu.razor",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-12T23:13:42.11Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "site.css",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\wwwroot\\css\\site.css",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\wwwroot\\css\\site.css",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\wwwroot\\css\\site.css",
+              "RelativeToolTip": "TradeLedger.Web\\wwwroot\\css\\site.css",
+              "ViewState": "AgIAAOAAAAAAAAAAAAAqwPIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-02-17T23:47:06.238Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Program.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Program.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Program.cs",
+              "RelativeToolTip": "TradeLedger.Web\\Program.cs",
+              "ViewState": "AgIAABoAAAAAAAAAAAAEwCUAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-12T23:01:08.891Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TradesReadService.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Services\\TradesReadService.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Services\\TradesReadService.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Services\\TradesReadService.cs",
+              "RelativeToolTip": "TradeLedger.Web\\Services\\TradesReadService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T20:39:59.236Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "ExecutionBreakdown.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\ExecutionBreakdown.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Shared\\ExecutionBreakdown.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Shared\\ExecutionBreakdown.razor",
+              "RelativeToolTip": "TradeLedger.Web\\Shared\\ExecutionBreakdown.razor",
+              "ViewState": "AgIAADYAAAAAAAAAAAAswEwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-14T21:01:45.747Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "DbFactory.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\DbFactory.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Data\\DbFactory.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\DbFactory.cs",
+              "RelativeToolTip": "TradeLedger.Data\\DbFactory.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAiwCkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T21:54:20.101Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "ClientProxyExtensions.cs",
+              "DocumentMoniker": "C:\\Users\\alang\\AppData\\Local\\Temp\\.vsdbgsrc\\c5b2729678e1a03df19e65899b4ad191802bd617a3623b940d97308bcc2b98d9\\ClientProxyExtensions.cs",
+              "ToolTip": "C:\\Users\\alang\\AppData\\Local\\Temp\\.vsdbgsrc\\c5b2729678e1a03df19e65899b4ad191802bd617a3623b940d97308bcc2b98d9\\ClientProxyExtensions.cs [Read Only]",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAEwBYAAAAAAAAAAQAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-18T21:48:34.039Z",
+              "EditorCaption": " [Read Only]"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "GroupSpreads.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Cli\\Grouping\\GroupSpreads.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Cli\\Grouping\\GroupSpreads.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Cli\\Grouping\\GroupSpreads.cs",
+              "RelativeToolTip": "TradeLedger.Cli\\Grouping\\GroupSpreads.cs",
+              "ViewState": "AgIAAJAAAAAAAAAAAAAwwJMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-15T17:43:19.473Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Cli\\Program.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Cli\\Program.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Cli\\Program.cs",
+              "RelativeToolTip": "TradeLedger.Cli\\Program.cs",
+              "ViewState": "AgIAAJoBAAAAAAAAAAAwwKYBAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T21:16:54.675Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "SchwabOptionParser.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\Shwab\\SchwabOptionParser.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Importers\\Shwab\\SchwabOptionParser.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\Shwab\\SchwabOptionParser.cs",
+              "RelativeToolTip": "TradeLedger.Importers\\Shwab\\SchwabOptionParser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-08T18:23:16.762Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "DashboardService.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Services\\DashboardService.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Services\\DashboardService.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Services\\DashboardService.cs",
+              "RelativeToolTip": "TradeLedger.Web\\Services\\DashboardService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEgAAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-12T23:06:33.992Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Counter.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Pages\\Counter.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Pages\\Counter.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Pages\\Counter.razor",
+              "RelativeToolTip": "TradeLedger.Web\\Pages\\Counter.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-18T00:17:12.557Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "App.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\App.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\App.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\App.razor",
+              "RelativeToolTip": "TradeLedger.Web\\App.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-12T23:02:17.374Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ExecutionRowDto.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Models\\ExecutionRowDto.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Models\\ExecutionRowDto.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Models\\ExecutionRowDto.cs",
+              "RelativeToolTip": "TradeLedger.Web\\Models\\ExecutionRowDto.cs",
+              "ViewState": "AgIAAAQAAAAAAAAAAAA1wAkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-14T20:35:56.545Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "TradeGroup.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\TradeGroup.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Core\\Models\\TradeGroup.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\TradeGroup.cs",
+              "RelativeToolTip": "TradeLedger.Core\\Models\\TradeGroup.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-08T18:48:54.503Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "TradeGroupLeg.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\TradeGroupLeg.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Core\\Models\\TradeGroupLeg.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\TradeGroupLeg.cs",
+              "RelativeToolTip": "TradeLedger.Core\\Models\\TradeGroupLeg.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAdAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T20:51:43.6Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Execution.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\Execution.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Core\\Models\\Execution.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\Execution.cs",
+              "RelativeToolTip": "TradeLedger.Core\\Models\\Execution.cs",
+              "ViewState": "AgIAABQAAAAAAAAAAAAAAB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T21:22:35.928Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "HeaderMap.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\csv\\HeaderMap.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Importers\\csv\\HeaderMap.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\csv\\HeaderMap.cs",
+              "RelativeToolTip": "TradeLedger.Importers\\csv\\HeaderMap.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T21:57:27.984Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "SchwabCsvImporter.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\Shwab\\SchwabCsvImporter.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Importers\\Shwab\\SchwabCsvImporter.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\Shwab\\SchwabCsvImporter.cs",
+              "RelativeToolTip": "TradeLedger.Importers\\Shwab\\SchwabCsvImporter.cs",
+              "ViewState": "AgIAAJ8AAAAAAAAAAAAcwK8AAAAIAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T21:58:21.062Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\appsettings.json",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\appsettings.json",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\appsettings.json",
+              "RelativeToolTip": "TradeLedger.Web\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-02-14T20:19:40.514Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "_Imports.razor",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\_Imports.razor",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\_Imports.razor",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\_Imports.razor",
+              "RelativeToolTip": "TradeLedger.Web\\_Imports.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-12T23:02:46.722Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Data\\AppDbContext.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\AppDbContext.cs",
+              "RelativeToolTip": "TradeLedger.Data\\AppDbContext.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAADwv0gAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-07T21:26:22.46Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "_Host.cshtml",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Pages\\_Host.cshtml",
+              "RelativeDocumentMoniker": "TradeLedger.Web\\Pages\\_Host.cshtml",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Web\\Pages\\_Host.cshtml",
+              "RelativeToolTip": "TradeLedger.Web\\Pages\\_Host.cshtml",
+              "ViewState": "AgIAABgAAAAAAAAAAAAAACMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-02-12T23:54:12.069Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "AppDbContextDesignTimeFactory.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\AppDbContextDesignTimeFactory.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Data\\AppDbContextDesignTimeFactory.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\AppDbContextDesignTimeFactory.cs",
+              "RelativeToolTip": "TradeLedger.Data\\AppDbContextDesignTimeFactory.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAxwB0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-12T14:46:29.703Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "TastyTradeCsvImporter.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\TastyTrade\\TastyTradeCsvImporter.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Importers\\TastyTrade\\TastyTradeCsvImporter.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\TastyTrade\\TastyTradeCsvImporter.cs",
+              "RelativeToolTip": "TradeLedger.Importers\\TastyTrade\\TastyTradeCsvImporter.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAAKAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T19:17:01.526Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "ExecutionFingerprint.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\ExecutionFingerprint.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Core\\Models\\ExecutionFingerprint.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\ExecutionFingerprint.cs",
+              "RelativeToolTip": "TradeLedger.Core\\Models\\ExecutionFingerprint.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T21:25:03.525Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "TradeGroupExecution.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\TradeGroupExecution.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Core\\Models\\TradeGroupExecution.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Core\\Models\\TradeGroupExecution.cs",
+              "RelativeToolTip": "TradeLedger.Core\\Models\\TradeGroupExecution.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-08T18:56:49.634Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "TastyTradeOptionParser.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\TastyTrade\\TastyTradeOptionParser.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Importers\\TastyTrade\\TastyTradeOptionParser.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\TastyTrade\\TastyTradeOptionParser.cs",
+              "RelativeToolTip": "TradeLedger.Importers\\TastyTrade\\TastyTradeOptionParser.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAEAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T19:17:29.492Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "ImportSummary.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\Common\\ImportSummary.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Importers\\Common\\ImportSummary.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\Common\\ImportSummary.cs",
+              "RelativeToolTip": "TradeLedger.Importers\\Common\\ImportSummary.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-11T19:21:53.043Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "TradeLedger.Data.csproj",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\TradeLedger.Data.csproj",
+              "RelativeDocumentMoniker": "TradeLedger.Data\\TradeLedger.Data.csproj",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\TradeLedger.Data.csproj",
+              "RelativeToolTip": "TradeLedger.Data\\TradeLedger.Data.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-07T21:44:40.804Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "TradeLedger.Importers.csproj",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\TradeLedger.Importers.csproj",
+              "RelativeDocumentMoniker": "TradeLedger.Importers\\TradeLedger.Importers.csproj",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Importers\\TradeLedger.Importers.csproj",
+              "RelativeToolTip": "TradeLedger.Importers\\TradeLedger.Importers.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-02-08T00:39:07.164Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "AppDbContextFactory.cs",
+              "DocumentMoniker": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\AppDbContextFactory.cs",
+              "RelativeDocumentMoniker": "TradeLedger.Data\\AppDbContextFactory.cs",
+              "ToolTip": "E:\\Projects\\TradeLedger\\src\\TradeLedger.Data\\AppDbContextFactory.cs",
+              "RelativeToolTip": "TradeLedger.Data\\AppDbContextFactory.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-02-08T20:02:03.626Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

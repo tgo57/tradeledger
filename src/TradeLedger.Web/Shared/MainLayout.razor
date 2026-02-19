@@ -1,0 +1,88 @@
+﻿@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+
+    <MudAppBar Dense="true" Elevation="0" Class="tl-appbar">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        <MudText Typo="Typo.h6" Class="ml-2">TradeLedger</MudText>
+
+        <MudSpacer />
+
+        <MudSelect T="string" Dense="true" Variant="Variant.Outlined" Margin="Margin.Dense"
+                   Class="tl-filter" Label="Account" @bind-Value="_account">
+            <MudSelectItem Value="@("All")">All Accounts</MudSelectItem>
+            <MudSelectItem Value="@("Schwab1")">Schwab1</MudSelectItem>
+            <MudSelectItem Value="@("Tasty1")">Tasty1</MudSelectItem>
+        </MudSelect>
+
+        <MudSelect T="string" Dense="true" Variant="Variant.Outlined" Margin="Margin.Dense"
+                   Class="tl-filter" Label="Range" @bind-Value="_range">
+            <MudSelectItem Value="@("30d")">Last 30D</MudSelectItem>
+            <MudSelectItem Value="@("90d")">Last 90D</MudSelectItem>
+            <MudSelectItem Value="@("YTD")">YTD</MudSelectItem>
+            <MudSelectItem Value="@("All")">All</MudSelectItem>
+        </MudSelect>
+
+        <!-- 🔍 Search box -->
+        <MudTextField Dense="true" Variant="Variant.Outlined" Margin="Margin.Dense"
+                      Class="tl-search"
+                      Placeholder="Search symbol / strike / note..."
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      @bind-Value="_search" />
+
+        <!-- 🔔 / 👤 icons -->
+        <MudIconButton Icon="@Icons.Material.Filled.NotificationsNone" />
+        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" />
+    </MudAppBar>
+
+
+    <MudDrawer @bind-Open="_drawerOpen"
+               Variant="DrawerVariant.Responsive"
+               MiniVariant="true"
+               MiniVariantWidth="56px"
+               Width="220px">
+               
+
+        <NavMenu DrawerOpen="_drawerOpen" />
+
+    </MudDrawer>
+
+
+    <MudMainContent Class="tl-content">
+        @Body
+    </MudMainContent>
+
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    // these will later be wired to a FilterState service
+    private string _account = "All";
+    private string _range = "All";
+    private string _search = "";
+
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+
+    private readonly MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight
+        {
+            Background = "#F7F8FA",
+            Surface = "#FFFFFF",
+            AppbarBackground = "#FFFFFF",
+            AppbarText = "#0F172A",
+            TextPrimary = "#0F172A",
+            TextSecondary = "#475569",
+            Primary = "#2563EB",
+            Secondary = "#0EA5E9",
+        },
+        LayoutProperties = new LayoutProperties { DefaultBorderRadius = "12px" }
+    };
+}

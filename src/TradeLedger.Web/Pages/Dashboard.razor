@@ -1,0 +1,361 @@
+﻿@page "/dashboard"
+
+@using MudBlazor
+@using TradeLedger.Web.Models
+@using TradeLedger.Web.Services
+@inject TradesReadService TradesRead
+@inject DashboardService Svc
+
+<MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+        <MudSelect T="string" Dense="true" @bind-Value="_account" Label="Account">
+            <MudSelectItem Value="@("Schwab1")">Schwab1</MudSelectItem>
+        </MudSelect>
+
+        <MudButton Variant="Variant.Filled" OnClick="Load">Refresh</MudButton>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Class="mt-3" />
+    }
+    else if (_vm is not null)
+    {
+        <MudGrid Class="mt-3">
+            <MudItem xs="12" md="3">
+                <KpiCard Title="Net P/L"
+                         Value="@_vm.Kpi_TotalPL.ToString("0.00")"
+                         AccentClass="@(_vm.Kpi_TotalPL >= 0 ? "accent-green" : "accent-red")" />
+            </MudItem>
+
+            <MudItem xs="12" md="3">
+                <KpiCard Title="Gross Return"
+                         Value="@_vm.Kpi_GrossReturn.ToString("0.00")"
+                         AccentClass="@(_vm.Kpi_GrossReturn >= 0 ? "accent-green" : "accent-red")" />
+            </MudItem>
+
+            <MudItem xs="12" md="3">
+                <KpiCard Title="Profit Factor"
+                         Value="@_vm.Kpi_ProfitFactor.ToString("0.00")"
+                         AccentClass="@(_vm.Kpi_ProfitFactor >= 1m ? "accent-green" : "accent-red")" />
+            </MudItem>
+
+            <MudItem xs="12" md="3">
+                <KpiCard Title="Win %"
+                         Value="@($"{_vm.Kpi_WinRate * 100m:0.0}%")"
+                         AccentClass="@(_vm.Kpi_WinRate >= 0.5m ? "accent-green" : "accent-red")" />
+            </MudItem>
+
+            <MudItem xs="12" md="3">
+                <KpiCard Title="Avg P/L"
+                         Value="@_vm.Kpi_AvgPL.ToString("0.00")"
+                         AccentClass="@(_vm.Kpi_AvgPL >= 0 ? "accent-green" : "accent-red")" />
+            </MudItem>
+
+            <MudItem xs="12" md="3">
+                <KpiCard Title="Max Drawdown"
+                         Value="@_vm.Kpi_MaxDrawdown.ToString("0.00")"
+                         AccentClass="accent-red" />
+            </MudItem>
+
+            <MudItem xs="12" md="3">
+                <KpiCard Title="Trades"
+                         Value="@_vm.Kpi_Trades.ToString()"
+                         AccentClass="accent-gray" />
+            </MudItem>
+        </MudGrid>
+
+
+        <MudGrid Class="mt-3">
+            <MudItem xs="12" md="9">
+                <MudPaper Class="pa-3">
+                    <MudText Typo="Typo.h6">Trades</MudText>
+                    <div class="tl-table-scroll">
+                        <MudTable class="tl-trades-table" Items="_vm.Trades"
+                                  Dense="true"
+                                  Hover="true"
+                                  Striped="true"
+                                  RowClick="_rowClickCb">
+
+
+                        <HeaderContent>
+                            <MudTh></MudTh> @* caret *@
+                            <MudTh>Id</MudTh>
+                            <MudTh>Status</MudTh>
+                            <MudTh>Open</MudTh>
+                            <MudTh>Close</MudTh>
+                            <MudTh>Exp</MudTh>
+                            <MudTh>Symbol</MudTh>
+                            <MudTh>R</MudTh>
+                            <MudTh>Strikes</MudTh>
+                            <MudTh align="Align.Right">Fees</MudTh>
+                            <MudTh align="Align.Right">Return $</MudTh>
+                            <MudTh Align="Align.Right">Net Return %</MudTh>
+
+
+
+                        </HeaderContent>
+
+                        <RowTemplate>
+                            <MudTd>
+                                <MudIconButton Size="Size.Small"
+                                               Icon="@(_expanded.Contains(context.Id) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                               OnClick="@(async () => await ToggleExecAsync(context.Id))" />
+                            </MudTd>
+
+                            <MudTd>@context.Id</MudTd>
+                            <MudTd>
+                                @{
+                                    var s = Status(context);
+                                    var color = s == "WIN" ? Color.Success
+                                              : s == "LOSS" ? Color.Error
+                                              : s == "OPEN" ? Color.Warning
+                                              : Color.Default;
+                                }
+
+                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="@color" Variant="Variant.Filled">
+                                    @s
+                                </MudChip>
+
+                            </MudTd>
+
+                            <MudTd Class="tl-nowrap">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">@context.OpenDate.ToString("yyyy-MM-dd")</MudText>
+                            </MudTd>
+
+                            <MudTd Class="tl-nowrap">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    @(context.CloseDate is null
+                                                                    ? "—"
+                                                                    : context.CloseDate.Value.ToString("yyyy-MM-dd"))
+                                </MudText>
+                            </MudTd>
+
+                                <MudTd Class="tl-nowrap">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    @context.Expiration.ToString("yyyy-MM-dd")
+                                </MudText>
+                            </MudTd>
+
+                            <MudTd>@context.Underlying</MudTd>
+                            <MudTd>@RightLetter(context.Right)</MudTd>
+                                <MudTd Class="tl-nowrap">
+                                <MudText Style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
+                                    @($"{context.ShortStrike} / {context.LongStrike}")
+                                </MudText>
+                            </MudTd>
+
+                            <MudTd align="Align.Right">@context.TotalFees.ToString("0.00")</MudTd>
+                            <MudTd Align="Align.Right">
+                                <MudText Typo="Typo.body2" Color="@(context.ReturnGross >= 0 ? Color.Success : Color.Error)">
+                                    @context.ReturnGross.ToString("0.00")
+                                </MudText>
+                            </MudTd>
+
+                            <MudTd Align="Align.Right">
+                                @if (context.NetReturnPct is { } pct)
+                                {
+                                    <MudText Typo="Typo.body2" Color="@(pct >= 0 ? Color.Success : Color.Error)">
+                                        @($"{pct:0.00}%")
+                                    </MudText>
+                                }
+                                else
+                                {
+                                    <MudText Color="Color.Secondary">—</MudText>
+                                }
+                            </MudTd>
+
+
+
+
+                            
+                        </RowTemplate>
+
+                            <ChildRowContent>
+                                @if (_expanded.Contains(context.Id))
+                                {
+                                    <MudTd ColSpan="999" Class="pl-6 pr-6 pb-4 tl-childrow tl-detail-cell">
+                                        @if (_execLoading.Contains(context.Id))
+                                        {
+                                            <MudProgressLinear Indeterminate="true" />
+                                        }
+                                        else if (_execCache.TryGetValue(context.Id, out var execs))
+                                        {
+                                            <ExecutionBreakdown Executions="execs" />
+                                        }
+                                        else
+                                        {
+                                            <MudText>No executions found.</MudText>
+                                        }
+                                    </MudTd>
+                                }
+                            </ChildRowContent>
+
+                    </MudTable>
+                    </div>
+                </MudPaper>
+            </MudItem>
+
+            <MudItem xs="12" md="3">
+                <MudStack Spacing="2">
+
+                    <MudPaper Class="pa-3">
+                        <MudText Typo="Typo.subtitle1">Year</MudText>
+                        <MudDivider Class="my-2" />
+                        @foreach (var r in _vm.ByYear)
+                        {
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                                <MudText>@r.Label</MudText>
+                                <MudSpacer />
+                                <MudText>@r.Value.ToString("0.00")</MudText>
+                            </MudStack>
+                        }
+                    </MudPaper>
+
+                    <MudPaper Class="pa-3">
+                        <MudText Typo="Typo.subtitle1">Monthly</MudText>
+                        <MudDivider Class="my-2" />
+                        @foreach (var r in _vm.ByMonth.TakeLast(12))
+                        {
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                                <MudText>@r.Label</MudText>
+                                <MudSpacer />
+                                <MudText>@r.Value.ToString("0.00")</MudText>
+                            </MudStack>
+                        }
+                    </MudPaper>
+
+                    <MudPaper Class="pa-3">
+                        <MudText Typo="Typo.subtitle1">DTE Buckets</MudText>
+                        <MudDivider Class="my-2" />
+                        @foreach (var r in _vm.ByDteBucket)
+                        {
+                            <MudStack Row="true" AlignItems="AlignItems.Center">
+                                <MudText>@r.Bucket</MudText>
+                                <MudSpacer />
+                                <MudText>PF @r.ProfitFactor.ToString("0.00")</MudText>
+                            </MudStack>
+                            <MudText Typo="Typo.caption">@($"{r.Trades} trades | {r.TotalPL:0.00} P/L | {r.MinDte}-{r.MaxDte} DTE")</MudText>
+                            <MudDivider Class="my-2" />
+                        }
+                    </MudPaper>
+
+                </MudStack>
+            </MudItem>
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    private string _broker = "Schwab";
+    private string _account = "Schwab1";
+    private bool _loading;
+    private DashboardVm? _vm;
+
+   
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Initialize the MudTable row click callback
+        _rowClickCb = EventCallback.Factory
+            .Create<MudBlazor.TableRowClickEventArgs<TradeRow>>(this, OnTradeRowClick);
+
+        await Load();
+    }
+
+
+    private async Task Load()
+    {
+        _loading = true;
+        try
+        {
+            _vm = await Svc.GetDashboard(_broker, _account, take: 200);
+            
+
+            // Build execution totals for the trades currently shown
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private static string RightLetter(string r) =>
+        string.IsNullOrWhiteSpace(r) ? "?" : char.ToUpperInvariant(r.Trim()[0]).ToString();
+
+    private static string Status(TradeRow g)
+    {
+        if (g.CloseDate is null) return "OPEN";
+        if (g.NetPL > 0m) return "WIN";
+        if (g.NetPL < 0m) return "LOSS";
+        return "FLAT";
+    }
+
+    private readonly HashSet<long> _expanded = new();
+    private readonly Dictionary<long, List<ExecutionRowDto>> _execCache = new();
+    private readonly HashSet<long> _execLoading = new();
+
+    private async Task ToggleExecAsync(long tradeGroupId)
+    {
+        if (_expanded.Contains(tradeGroupId))
+        {
+            _expanded.Remove(tradeGroupId);
+            return;
+        }
+
+        _expanded.Add(tradeGroupId);
+
+        if (_execCache.ContainsKey(tradeGroupId))
+            return;
+
+        _execLoading.Add(tradeGroupId);
+        try
+        {
+            _execCache[tradeGroupId] =
+                await TradesRead.GetExecutionsForGroupAsync(tradeGroupId);
+        }
+        finally
+        {
+            _execLoading.Remove(tradeGroupId);
+        }
+    }
+
+    // Drawer state
+    private bool _detailsOpen;
+    private TradeRow? _selectedTrade;
+
+    // Open the right-side trade details drawer
+    private async Task OpenDetailsAsync(TradeRow trade)
+    {
+        _selectedTrade = trade;
+        _detailsOpen = true;
+
+        // Load executions if not cached
+        if (_execCache.ContainsKey(trade.Id))
+            return;
+
+        _execLoading.Add(trade.Id);
+        try
+        {
+            _execCache[trade.Id] =
+                await TradesRead.GetExecutionsForGroupAsync(trade.Id);
+        }
+        finally
+        {
+            _execLoading.Remove(trade.Id);
+        }
+    }
+
+    // Close drawer
+    private void CloseDetails()
+    {
+        _detailsOpen = false;
+    }
+
+    private async Task OnTradeRowClick(TableRowClickEventArgs<TradeRow> args)
+    {
+        await OpenDetailsAsync(args.Item);
+    }
+
+    private EventCallback<TableRowClickEventArgs<TradeRow>> _rowClickCb;
+}

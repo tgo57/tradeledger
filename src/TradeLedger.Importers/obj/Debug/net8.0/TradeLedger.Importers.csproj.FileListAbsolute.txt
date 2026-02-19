@@ -1,0 +1,16 @@
+E:\Projects\TradeLedger\src\TradeLedger.Importers\bin\Debug\net8.0\TradeLedger.Importers.deps.json
+E:\Projects\TradeLedger\src\TradeLedger.Importers\bin\Debug\net8.0\TradeLedger.Importers.dll
+E:\Projects\TradeLedger\src\TradeLedger.Importers\bin\Debug\net8.0\TradeLedger.Importers.pdb
+E:\Projects\TradeLedger\src\TradeLedger.Importers\bin\Debug\net8.0\TradeLedger.Core.dll
+E:\Projects\TradeLedger\src\TradeLedger.Importers\bin\Debug\net8.0\TradeLedger.Core.pdb
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.csproj.AssemblyReference.cache
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.GeneratedMSBuildEditorConfig.editorconfig
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.AssemblyInfoInputs.cache
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.AssemblyInfo.cs
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.csproj.CoreCompileInputs.cache
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.sourcelink.json
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLed.BE95361A.Up2Date
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.dll
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\refint\TradeLedger.Importers.dll
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\TradeLedger.Importers.pdb
+E:\Projects\TradeLedger\src\TradeLedger.Importers\obj\Debug\net8.0\ref\TradeLedger.Importers.dll

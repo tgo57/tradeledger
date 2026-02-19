@@ -1,0 +1,16 @@
+E:\Projects\TradeLedger\src\TradeLedger.Data\bin\Debug\net9.0\TradeLedger.Data.deps.json
+E:\Projects\TradeLedger\src\TradeLedger.Data\bin\Debug\net9.0\TradeLedger.Data.dll
+E:\Projects\TradeLedger\src\TradeLedger.Data\bin\Debug\net9.0\TradeLedger.Data.pdb
+E:\Projects\TradeLedger\src\TradeLedger.Data\bin\Debug\net9.0\TradeLedger.Core.dll
+E:\Projects\TradeLedger\src\TradeLedger.Data\bin\Debug\net9.0\TradeLedger.Core.pdb
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.csproj.AssemblyReference.cache
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.GeneratedMSBuildEditorConfig.editorconfig
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.AssemblyInfoInputs.cache
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.AssemblyInfo.cs
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.csproj.CoreCompileInputs.cache
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.sourcelink.json
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLed.A22D9F33.Up2Date
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.dll
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\refint\TradeLedger.Data.dll
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\TradeLedger.Data.pdb
+E:\Projects\TradeLedger\src\TradeLedger.Data\obj\Debug\net9.0\ref\TradeLedger.Data.dll
