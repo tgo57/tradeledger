@@ -1,3 +1,28 @@
 db/*.db
 db/*.db-wal
 db/*.db-shm
+
+# Visual Studio
+.vs/
+**/.vs/
+
+# Build output
+bin/
+obj/
+**/bin/
+**/obj/
+
+# User / cache files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Databases / copilot indexes (often under .vs)
+*.db
+*.db-shm
+*.db-wal
+
+# Rider / VS Code
+.idea/
+.vscode/

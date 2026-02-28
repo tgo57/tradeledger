@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MudBlazor.Extensions;
 using TradeLedger.Data;
 using TradeLedger.Importers.Schwab;
 
@@ -30,10 +31,11 @@ public sealed class DashboardService
                 LongStrike = g.LongStrike,
                 OpenDate = g.OpenDate,
                 CloseDate = g.CloseDate,
+
+                // We will override NetPL below using executions (Schwab Amount is authoritative)
                 NetPL = g.NetPL,
             })
             .ToListAsync();
-
 
         var groupIds = groups.Select(g => g.Id).ToList();
 
@@ -48,15 +50,18 @@ public sealed class DashboardService
                 e.Action,
                 e.Symbol,
                 e.Quantity,
-                e.NetAmount,
-                e.Fees
+                e.Price,     // ✅ REQUIRED to reconstruct TraderSync "Return $" (gross before fees)
+                e.NetAmount, // Schwab CSV "Amount" = AFTER fees
+                e.Fees       // Schwab CSV "Fees & Comm" (positive), but normalize anyway
             }
         ).ToListAsync();
 
         static bool IsOpen(string action) => action.Contains("to open", StringComparison.OrdinalIgnoreCase);
+
         static bool IsClose(string action) =>
                 action.Contains("to close", StringComparison.OrdinalIgnoreCase)
             || action.Contains("expired", StringComparison.OrdinalIgnoreCase);
+
         static bool IsSell(string action) => action.TrimStart().StartsWith("sell", StringComparison.OrdinalIgnoreCase);
         static bool IsBuy(string action) => action.TrimStart().StartsWith("buy", StringComparison.OrdinalIgnoreCase);
 
@@ -67,17 +72,46 @@ public sealed class DashboardService
 
         foreach (var tr in groups)
         {
-            if (!execByGroup.TryGetValue(tr.Id, out var ex))
+            if (!execByGroup.TryGetValue(tr.Id, out var ex) || ex.Count == 0)
             {
                 tr.TotalFees = 0m;
-                tr.ReturnGross = tr.NetPL + tr.TotalFees;
+                tr.ReturnGross = 0m;     // no executions → no gross
+                tr.NetPL = 0m;           // no executions → no net
                 tr.NetReturnPct = null;
                 continue;
             }
 
-            // Fees + gross return (this is the one you want to match ToS/TraderSync)
-            tr.TotalFees = ex.Sum(x => x.Fees);
-            tr.ReturnGross = tr.NetPL + tr.TotalFees;
+            // -----------------------------------------
+            // Schwab semantics (locked):
+            // NetAmount (CSV Amount) is AFTER fees.
+            // Fees is a positive cost (normalize anyway).
+            // TraderSync "Return $" = BEFORE fees.
+            // -----------------------------------------
+
+            // Fees as positive cost
+            var feesCost = ex.Sum(x => Math.Abs(x.Fees));
+            tr.TotalFees = feesCost;
+
+            var netAfterFees = ex.Sum(x => x.NetAmount);
+            tr.NetPL = netAfterFees;
+
+            // Gross BEFORE fees (TraderSync "Return $") reconstructed from price & qty
+            // SELL => +, BUY => -
+            decimal grossBeforeFees = 0m;
+            foreach (var x in ex)
+            {
+                var qty = Math.Abs(x.Quantity.GetValueOrDefault());  // ✅ handles decimal?
+                var price = x.Price.GetValueOrDefault();               // ✅ handles decimal?
+                var leg = qty * price * 100m;
+
+                grossBeforeFees += IsSell(x.Action) ? leg : -leg;
+            }
+            tr.ReturnGross = grossBeforeFees;
+
+            // Optional sanity check: gross - fees ≈ net
+            // (Don’t throw in prod; just debug/log if you want)
+            // var check = grossBeforeFees - feesCost;
+            // if (Math.Abs(check - netAfterFees) > 0.02m) { /* log */ }
 
             // Net Return % only makes sense for CLOSED CreditSpreads
             if (tr.CloseDate is null ||
@@ -90,11 +124,17 @@ public sealed class DashboardService
             // TraderSync-style: Net Return % = NetPL(after all fees) / EntryCredit(before fees)
             var open = ex.Where(x => IsOpen(x.Action)).ToList();
 
-            var entryNetAfterFees = open.Sum(x => x.NetAmount); // sells +, buys -
-            var openFees = open.Sum(x => x.Fees);
+            // Entry credit BEFORE fees must also be reconstructed from price/qty
+            // (This matches TraderSync and avoids mixing Amount-with-fees)
+            decimal entryCreditBeforeFees = 0m;
+            foreach (var x in open)
+            {
+                var qty = Math.Abs(x.Quantity.GetValueOrDefault());
+                var price = x.Price.GetValueOrDefault();
+                var leg = qty * price * 100m;
 
-            // Entry credit "before fees" (this makes 1062.80 + 12.20 = 1075.00 on your example)
-            var entryCreditBeforeFees = entryNetAfterFees + openFees;
+                entryCreditBeforeFees += IsSell(x.Action) ? leg : -leg;
+            }
 
             if (entryCreditBeforeFees <= 0m)
             {
@@ -104,24 +144,18 @@ public sealed class DashboardService
             {
                 tr.NetReturnPct = (tr.NetPL / entryCreditBeforeFees) * 100m;
             }
-
-
         }
-
 
         var closed = groups.Where(g => g.CloseDate != null).ToList();
 
         // TraderSync-style accumulative return (sum of per-trade Return $)
-        // NOTE: ReturnGross = NetPL + TotalFees (you already computed it above)
         var grossReturn = closed.Sum(x => x.ReturnGross);
-
 
         var totalPL = closed.Sum(x => x.NetPL);
         var wins = closed.Count(x => x.NetPL > 0m);
         var losses = closed.Count(x => x.NetPL < 0m);
-        // NEW (matches what you see in the table)
         var trades = closed.Count;
-       
+
         var winRate = trades == 0 ? 0m : (decimal)wins / trades;
 
         var grossWin = closed.Where(x => x.NetPL > 0m).Sum(x => x.NetPL);
@@ -191,8 +225,8 @@ public sealed class DashboardService
             Broker = broker,
             Account = account,
 
-            Kpi_TotalPL = totalPL,
-            Kpi_GrossReturn = grossReturn,
+            Kpi_TotalPL = totalPL,           // after-fees
+            Kpi_GrossReturn = grossReturn,   // before-fees (TraderSync "Return $")
             Kpi_ProfitFactor = profitFactor,
             Kpi_WinRate = winRate,
             Kpi_AvgPL = avgPL,

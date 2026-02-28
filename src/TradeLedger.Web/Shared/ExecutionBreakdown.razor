@@ -1,43 +1,113 @@
 ﻿@using TradeLedger.Web.Models
-
+@using System.Globalization
 
 <MudPaper Class="pa-3" Outlined="true" Elevation="0">
     <MudText Typo="Typo.subtitle2">Executions</MudText>
+
+    @if (!string.IsNullOrWhiteSpace(_contractSummary))
+    {
+        <MudText Typo="Typo.caption" Class="tl-exec-summary">
+            @_contractSummary
+        </MudText>
+    }
 
     <div class="tl-table-scroll tl-exec-scroll">
         <MudTable Items="@_rows" Dense="true" Hover="true" Class="tl-exec-table">
             <HeaderContent>
                 <MudTh>Date</MudTh>
                 <MudTh>Time</MudTh>
-                <MudTh>Symbol</MudTh>
-                <MudTh>Description</MudTh>
-                <MudTh Align="Align.Right">Qty</MudTh>
-                <MudTh Align="Align.Right">Price</MudTh>
-                <MudTh Align="Align.Right">Fees</MudTh>
-                <MudTh Align="Align.Right">NetAmount</MudTh>
-                <MudTh Align="Align.Right">Running</MudTh>
+                <MudTh>Sym</MudTh>
+                <MudTh>Exp</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh align="Align.Right">Strike</MudTh>
+                <MudTh class="tl-desc">Description</MudTh>
+                <MudTh align="Align.Right">Qty</MudTh>
+                <MudTh align="Align.Right">Price</MudTh>
+                <MudTh align="Align.Right">Fees</MudTh>
+                <MudTh align="Align.Right">Gross</MudTh>
+                <MudTh align="Align.Right">Net</MudTh>
+                <MudTh align="Align.Right">Running</MudTh>
             </HeaderContent>
 
             <RowTemplate>
                 <MudTd>@context.ExecutedAt.ToString("yyyy-MM-dd")</MudTd>
                 <MudTd>@context.ExecutedAt.ToString("HH:mm:ss")</MudTd>
-                <MudTd>@context.Symbol</MudTd>
-                <MudTd class="tl-desc">@context.Description</MudTd>
-                <MudTd Align="Align.Right">@context.Quantity.ToString("0.##")</MudTd>
-                <MudTd Align="Align.Right">@context.Price.ToString("0.00")</MudTd>
-                <MudTd Align="Align.Right">@context.Fees.ToString("0.00")</MudTd>
-                <MudTd Align="Align.Right">@context.NetAmount.ToString("0.00")</MudTd>
-                <MudTd Align="Align.Right">@context.Running.ToString("0.00")</MudTd>
+
+                @* Hover-to-expand: show clean Sym, tooltip shows full contract *@
+                <MudTd>
+                    <MudTooltip Text="@context.ContractFull" Placement="Placement.Bottom" Duration="0">
+                        <span class="tl-exec-sym">@context.Underlying</span>
+                    </MudTooltip>
+                </MudTd>
+
+                <MudTd class="tl-nowrap">
+                    @if (context.Expiration is { } exp)
+                    {
+                        @exp.ToString("yyyy-MM-dd")
+                    }
+                    else
+                    {
+                        <span class="tl-muted">—</span>
+                    }
+                </MudTd>
+
+                <MudTd>
+                    @if (context.Right == "P")
+                    {
+                        <span class="tl-opt tl-put">Put</span>
+                    }
+                    else if (context.Right == "C")
+                    {
+                        <span class="tl-opt tl-call">Call</span>
+                    }
+                </MudTd>
+
+                <MudTd align="Align.Right">
+                    @if (context.Strike is { } k)
+                    {
+                        @k.ToString("0")
+                    }
+                    else
+                    {
+                        <span class="tl-muted">—</span>
+                    }
+                </MudTd>
+
+                <MudTd class="tl-desc">
+                    <MudTooltip Text="@context.Description" Placement="Placement.Bottom" Duration="0">
+                        <span class="tl-ellipsis">@context.Description</span>
+                    </MudTooltip>
+                </MudTd>
+
+                <MudTd align="Align.Right">@context.Quantity.ToString("0.##")</MudTd>
+                <MudTd align="Align.Right">@context.Price.ToString("0.00")</MudTd>
+                <MudTd align="Align.Right">@context.Fees.ToString("0.00")</MudTd>
+
+                @* Your NetAmount appears to be BEFORE fees, so label it Gross *@
+                <MudTd align="Align.Right">@context.Gross.ToString("0.00")</MudTd>
+                <MudTd align="Align.Right">@context.NetAfterFees.ToString("0.00")</MudTd>
+
+                <MudTd align="Align.Right">@context.Running.ToString("0.00")</MudTd>
             </RowTemplate>
         </MudTable>
     </div>
 
     <MudDivider Class="my-2" />
 
+    @{
+        // Fees (positive cost)
+        var fees = _rows.Sum(x => Math.Abs(x.Fees));
+        // TraderSync-style gross (before fees)
+        var gross = _rows.Sum(x => x.Gross + x.Fees);
+
+        // Schwab truth: Net AFTER fees = sum of NetAmount
+        var net = _rows.Sum(x => x.NetAfterFees);
+    }
+
     <MudText Typo="Typo.body2">
-        <b>Gross:</b> @_rows.Sum(x => x.NetAmount).ToString("0.00")
-        &nbsp;&nbsp; <b>Fees:</b> @_rows.Sum(x => x.Fees).ToString("0.00")
-        &nbsp;&nbsp; <b>Net After Fees:</b> @_rows.Sum(x => x.NetAmount - x.Fees).ToString("0.00")
+        <b>Total Return:</b> @gross.ToString("0.00")
+        &nbsp;&nbsp; <b>Fees:</b> @fees.ToString("0.00")
+        &nbsp;&nbsp; <b>Net (after fees):</b> @net.ToString("0.00")
     </MudText>
 </MudPaper>
 
@@ -45,6 +115,7 @@
     [Parameter] public List<ExecutionRowDto> Executions { get; set; } = new();
 
     private List<Row> _rows = new();
+    private string _contractSummary = "";
 
     protected override void OnParametersSet()
     {
@@ -54,23 +125,174 @@
             .OrderBy(x => x.ExecutedAt)
             .Select(x =>
             {
-                run += x.NetAmount;
+                run += (x.NetAmount + x.Fees);
                 return new Row(x, run);
             })
             .ToList();
+
+        BuildContractSummary();
+
+
+
+    }
+
+
+
+    private void BuildContractSummary()
+    {
+        // Pull parsed contract fields from the rows we already built
+        var parsed = _rows
+            .Select(r => new { r.ExecutedAt, r.Underlying, r.Expiration, r.Right, r.Strike, r.Gross })
+            .Where(x =>
+                !string.IsNullOrWhiteSpace(x.Underlying) &&
+                x.Expiration is not null &&
+                !string.IsNullOrWhiteSpace(x.Right) &&
+                x.Strike is not null)
+            .ToList();
+
+        if (parsed.Count == 0)
+        {
+            _contractSummary = "";
+            return;
+        }
+
+        var underlying = parsed[0].Underlying;
+        var exp = parsed[0].Expiration;
+        var right = parsed[0].Right; // "P" or "C"
+
+        // Distinct strikes for compact display (6845/6850)
+        var strikes = parsed
+            .Select(x => x.Strike!.Value)
+            .Distinct()
+            .OrderBy(x => x)
+            .ToList();
+
+        var strikeCompact = strikes.Count > 0
+            ? string.Join("/", strikes.Select(s => s.ToString("0"))).Trim()
+            : "—";
+
+        var expText = exp?.ToString("yyyy-MM-dd") ?? "—";
+
+        // -------------------------
+        // CREDIT vs DEBIT inference
+        // -------------------------
+        // "Open slice" = earliest executed timestamp.
+        // If your exports have identical times (00:00:00), this still works because the earliest ties.
+        var firstTs = parsed.Min(p => p.ExecutedAt);
+        var openSlice = parsed.Where(p => p.ExecutedAt == firstTs).ToList();
+
+        // Your table treats NetAmount as GROSS (before fees), so use Gross here.
+        // Convention (typical): credit is positive cashflow at open, debit is negative.
+        var openGross = openSlice.Sum(x => x.Gross);
+        var isCredit = openGross >= 0m;
+
+        // -----------------------------------------
+        // Determine ShortStrike / LongStrike (spread)
+        // -----------------------------------------
+        decimal? shortStrike = null;
+        decimal? longStrike = null;
+
+        if (strikes.Count >= 2)
+        {
+            var a = strikes[0];        // lower strike
+            var b = strikes[^1];       // higher strike
+
+            if (right == "P")
+            {
+                // CREDIT put: short high, long low
+                // DEBIT  put: long high, short low
+                if (isCredit) { shortStrike = b; longStrike = a; }
+                else { shortStrike = a; longStrike = b; }
+            }
+            else if (right == "C")
+            {
+                // CREDIT call: short low, long high
+                // DEBIT  call: long low, short high
+                if (isCredit) { shortStrike = a; longStrike = b; }
+                else { shortStrike = b; longStrike = a; }
+            }
+        }
+
+        var rightText = right == "P" ? "Put" : right == "C" ? "Call" : "—";
+        var cdText = isCredit ? "Credit" : "Debit";
+
+        // Optional leg text only when we have 2 strikes
+        var legText = (shortStrike is not null && longStrike is not null)
+            ? $" • Short {shortStrike.Value:0} / Long {longStrike.Value:0}"
+            : "";
+
+        // Example:
+        // SPXW  2026-02-23  Put  6845/6850  Credit • Short 6850 / Long 6845
+        _contractSummary = $"{underlying}  {expText}  {rightText}  {strikeCompact}  {cdText}{legText}";
     }
 
     private sealed record Row(ExecutionRowDto Base, decimal RunningTotal)
     {
         public DateTime ExecutedAt => Base.ExecutedAt;
-        public string Symbol => Base.Symbol;
         public string Description => Base.Description;
         public decimal Quantity => Base.Quantity;
         public decimal Price => Base.Price;
         public decimal Fees => Base.Fees;
-        public decimal NetAmount => Base.NetAmount;
 
-        public decimal Running => RunningTotal; // OK
+        // IMPORTANT:
+        // Your earlier correction implies NetAmount is BEFORE fees.
+        // So treat it as Gross and compute NetAfterFees.
+        // Schwab CSV Amount is AFTER fees
+        // Reconstruct before-fees gross cashflow
+        // public decimal Gross
+        // {
+        //     get
+        //     {
+        //         var amt = Base.NetAmount;
+        //         var fee = Math.Abs(Base.Fees);
+        //         return amt > 0 ? amt + fee : amt - fee;
+        //     }
+        // }
+
+        public decimal FeesCost => Math.Abs(Base.Fees);
+
+        // Schwab truth: Amount is AFTER fees
+        public decimal NetAfterFees => Base.NetAmount - (Base.NetAmount >= 0m ? FeesCost : -FeesCost);
+
+        // Gross BEFORE fees
+        public decimal Gross => Base.NetAmount;
+
+
+
+        public decimal Running => RunningTotal;
+
+        // Parse out Underlying / Exp / Strike / Right from Base.Symbol when possible
+        public string Underlying => TryParseSymbol(Base.Symbol).Underlying;
+        public DateOnly? Expiration => TryParseSymbol(Base.Symbol).Expiration;
+        public decimal? Strike => TryParseSymbol(Base.Symbol).Strike;
+        public string Right => TryParseSymbol(Base.Symbol).Right;
+
+        public string ContractFull => $"{Base.Symbol}";
+
+        private static (string Underlying, DateOnly? Expiration, decimal? Strike, string Right) TryParseSymbol(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+                return ("", null, null, "");
+
+            // Expected: "SPXW 02/23/2026 6845.00 P"
+            var parts = s.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 4)
+                return (parts[0], null, null, "");
+
+            var underlying = parts[0];
+
+            DateOnly? exp = null;
+            if (DateTime.TryParse(parts[1], CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+                exp = DateOnly.FromDateTime(dt);
+
+            decimal? strike = null;
+            if (decimal.TryParse(parts[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var k))
+                strike = k;
+
+            var right = parts[3].Trim().ToUpperInvariant(); // "P" or "C"
+            if (right != "P" && right != "C") right = "";
+
+            return (underlying, exp, strike, right);
+        }
     }
 }
-

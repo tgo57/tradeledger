@@ -1,27 +1,133 @@
-﻿<MudPaper Class="pa-4 tl-kpi-card" Elevation="0">
-    <div class="tl-kpi-accent @AccentClass"></div>
+﻿@using MudBlazor
 
-    <MudText Typo="Typo.caption" Color="Color.Secondary">
-        @Title
-    </MudText>
+<MudPaper Class="@RootClass" Elevation="1">
+    <div class="@AccentBarClass"></div>
 
-    <MudText Typo="Typo.h5" Class="mt-1">
-        @Value
-    </MudText>
+    <div class="tl-kpi-inner">
+        <div class="tl-kpi-left">
+            <div class="tl-kpi-title">@Title</div>
+            @* <div class="tl-kpi-value">@Value</div> *@
 
-    @if (!string.IsNullOrWhiteSpace(Sub))
-    {
-        <MudText Typo="Typo.caption" Color="Color.Secondary">
-            @Sub
-        </MudText>
-    }
+            <MudText Class="tl-kpi-value">
+                @Value
+                @if (ShowTrend)
+                {
+                    <span class="tl-kpi-trend @(Trend > 0 ? "up" : Trend < 0 ? "down" : "flat")">
+                        @(Trend > 0 ? "▲" : Trend < 0 ? "▼" : "—")
+                    </span>
+                }
+            </MudText>
+
+
+            @if (!string.IsNullOrWhiteSpace(Subtext))
+            {
+                <div class="tl-kpi-sub">@Subtext</div>
+            }
+        </div>
+
+        <div class="tl-kpi-right">
+
+            @* Donut *@
+            @if (ShowDonut && DonutParts?.Length == 2)
+            {
+                <div class="tl-kpi-viz tl-kpi-viz-donut">
+                    <MudChart ChartType="ChartType.Donut"
+                              InputData="DonutParts"
+                              InputLabels="DonutLabels"
+                              Width="56px"
+                              Height="56px"
+                              Class="tl-kpi-donut" />
+                </div>
+            }
+
+            @* Sparkline *@
+            @if (ShowSparkline && Sparkline is not null && Sparkline.Length > 1)
+            {
+                <div class="tl-kpi-viz tl-kpi-viz-spark tl-kpi-spark-host">
+                    <Sparkline Data="Sparkline"
+                               Labels="SparkLabels"
+                               WidthPx="104"
+                               HeightPx="34"
+                               StartColor="#6D28D9"
+                               EndColor="#22C55E"
+                               TooltipTitle="@Title"
+                               SeriesLabel="@Title" />
+                </div>
+            }
+
+            @* Debug (temporary) *@
+            @* <div style="font-size:11px; opacity:.6;">
+                Donut: @ShowDonut parts=@(DonutParts?.Length ?? 0) |
+                Spark: @ShowSparkline len=@(Sparkline?.Length ?? 0)
+            </div>
+            <div style="font-size:14px; font-weight:700;">
+                KPI DEBUG ACTIVE
+            </div> *@
+
+        </div>
+    </div>
 </MudPaper>
 
 @code {
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public string Value { get; set; } = "";
+    [Parameter] public string AccentClass { get; set; } = "accent-gray";
+    [Parameter] public string Class { get; set; } = "";
+    [Parameter] public string? Subtext { get; set; }
+    [Parameter] public int Trend { get; set; } = 0; // -1 down, 0 flat, +1 up
+    [Parameter] public bool ShowTrend { get; set; } = false;
+    [Parameter] public string SparkSeriesLabel { get; set; } = "";
+    // Donut
+    [Parameter] public bool ShowDonut { get; set; }
+    [Parameter] public double[]? DonutParts { get; set; }
+    [Parameter] public string[] DonutLabels { get; set; } = Array.Empty<string>();
 
-    // Optional extras (safe defaults)
-    [Parameter] public string Sub { get; set; } = "";
-    [Parameter] public string AccentClass { get; set; } = "accent-blue";
+    // Sparkline
+    [Parameter] public bool ShowSparkline { get; set; }
+    [Parameter] public double[]? Sparkline { get; set; }
+
+
+    // ✅ ADD
+    [Parameter] public string[] SparkLabels { get; set; } = Array.Empty<string>();
+
+    private List<ChartSeries> SparkSeries =>
+    Sparkline is null
+        ? new()
+        : new()
+        {
+            new ChartSeries
+            {
+                Name = "",
+                Data = Sparkline,
+                //Color = "#2563eb" // TraderSync-style blue
+            }
+        };
+
+    private string RootClass
+    {
+        get
+        {
+            var baseClass = string.IsNullOrWhiteSpace(Class)
+                ? "tl-kpi-card"
+                : $"tl-kpi-card {Class}";
+
+            if (ShowDonut)
+                baseClass += " has-donut";
+
+            // ✅ ADD: trend class
+            baseClass += Trend switch
+            {
+                > 0 => " trend-up",
+                < 0 => " trend-down",
+                _ => " trend-flat"
+            };
+
+            return baseClass;
+        }
+    }
+
+    private string AccentBarClass =>
+        string.IsNullOrWhiteSpace(AccentClass) ? "tl-kpi-accent" : $"tl-kpi-accent {AccentClass}";
+
+    
 }

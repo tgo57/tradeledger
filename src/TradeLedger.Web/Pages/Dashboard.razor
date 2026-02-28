@@ -21,49 +21,87 @@
     }
     else if (_vm is not null)
     {
-        <MudGrid Class="mt-3">
-            <MudItem xs="12" md="3">
+        <div class="tl-kpi-strip mt-3">
+            
+
+            <div class="tl-kpi-item">
+                <KpiCard Title="Acc. Return $"
+                         Value="@_vm.Kpi_GrossReturn.ToString("0.00")"
+                         AccentClass="@(_vm.Kpi_GrossReturn >= 0 ? "accent-green" : "accent-red")"
+                         Trend="@SparkTrend(_sparkNetPl)"
+                         ShowTrend="true"
+                         ShowSparkline="true"
+                         Sparkline="@_sparkGross"
+                         SparkLabels="@_sparkGrossLabels" />
+
+            </div>
+
+            <div class="tl-kpi-item">
                 <KpiCard Title="Net P/L"
                          Value="@_vm.Kpi_TotalPL.ToString("0.00")"
-                         AccentClass="@(_vm.Kpi_TotalPL >= 0 ? "accent-green" : "accent-red")" />
-            </MudItem>
+                         AccentClass="@(_vm.Kpi_TotalPL >= 0 ? "accent-green" : "accent-red")"
+                         Subtext=""
+                         Trend="@SparkTrend(_sparkNetPl)"
+                         ShowTrend="true"
+                         ShowSparkline="true"
+                         Sparkline="@_sparkNetPl"
+                         SparkLabels="@_sparkNetPlLabels" />
 
-            <MudItem xs="12" md="3">
-                <KpiCard Title="Gross Return"
-                         Value="@_vm.Kpi_GrossReturn.ToString("0.00")"
-                         AccentClass="@(_vm.Kpi_GrossReturn >= 0 ? "accent-green" : "accent-red")" />
-            </MudItem>
 
-            <MudItem xs="12" md="3">
+            </div>
+
+            <div class="tl-kpi-item">
                 <KpiCard Title="Profit Factor"
                          Value="@_vm.Kpi_ProfitFactor.ToString("0.00")"
-                         AccentClass="@(_vm.Kpi_ProfitFactor >= 1m ? "accent-green" : "accent-red")" />
-            </MudItem>
+                         AccentClass="@(
+                         _vm.Kpi_ProfitFactor >= 1.5m ? "accent-green" :
+                         _vm.Kpi_ProfitFactor >= 1.0m ? "accent-gray" :
+                         "accent-red"
+                  )"
+                     ShowSparkline="true"
+                     Trend="@SparkTrend(_sparkPf)"
+                     ShowTrend="true"
+                     Sparkline="@_sparkPf"
+                     SparkLabels="@_sparkPfLabels" 
+                />
+            </div>
 
-            <MudItem xs="12" md="3">
-                <KpiCard Title="Win %"
+            <div class="tl-kpi-item">
+                <KpiCard Title="Win Rate"
                          Value="@($"{_vm.Kpi_WinRate * 100m:0.0}%")"
-                         AccentClass="@(_vm.Kpi_WinRate >= 0.5m ? "accent-green" : "accent-red")" />
-            </MudItem>
+                         AccentClass="@(
+                                   _vm.Kpi_WinRate >= 0.60m ? "accent-green" :
+                                   _vm.Kpi_WinRate >= 0.50m ? "accent-gray" :
+                                   "accent-red"
+                  )"
+                     Subtext="@($"{_donutWinLoss[0]:0}W / {_donutWinLoss[1]:0}L")"
+                     Trend="@WinRateTrend()"
+                     ShowDonut="true"
+                     DonutParts="@_donutWinLoss"
+                     DonutLabels="@(new[] { "Win", "Loss" })" />
 
-            <MudItem xs="12" md="3">
+            </div>
+
+            <div class="tl-kpi-item">
                 <KpiCard Title="Avg P/L"
                          Value="@_vm.Kpi_AvgPL.ToString("0.00")"
                          AccentClass="@(_vm.Kpi_AvgPL >= 0 ? "accent-green" : "accent-red")" />
-            </MudItem>
+            </div>
 
-            <MudItem xs="12" md="3">
+            <div class="tl-kpi-item">
                 <KpiCard Title="Max Drawdown"
                          Value="@_vm.Kpi_MaxDrawdown.ToString("0.00")"
                          AccentClass="accent-red" />
-            </MudItem>
+            </div>
 
-            <MudItem xs="12" md="3">
+            <div class="tl-kpi-item">
                 <KpiCard Title="Trades"
                          Value="@_vm.Kpi_Trades.ToString()"
                          AccentClass="accent-gray" />
-            </MudItem>
-        </MudGrid>
+            </div>
+        </div>
+
+
 
 
         <MudGrid Class="mt-3">
@@ -86,11 +124,11 @@
                             <MudTh>Close</MudTh>
                             <MudTh>Exp</MudTh>
                             <MudTh>Symbol</MudTh>
-                            <MudTh>R</MudTh>
-                            <MudTh>Strikes</MudTh>
-                            <MudTh align="Align.Right">Fees</MudTh>
+                            <MudTh class="tl-col-putcall">Put/Call</MudTh>
+                            <MudTh class="tl-col-strikes">Strikes</MudTh>
+                            <MudTh class="tl-col-fees" align="Align.Right">Fees</MudTh>
                             <MudTh align="Align.Right">Return $</MudTh>
-                            <MudTh Align="Align.Right">Net Return %</MudTh>
+                            <MudTh align="Align.Right">Net Return %</MudTh>
 
 
 
@@ -107,61 +145,72 @@
                             <MudTd>
                                 @{
                                     var s = Status(context);
-                                    var color = s == "WIN" ? Color.Success
-                                              : s == "LOSS" ? Color.Error
-                                              : s == "OPEN" ? Color.Warning
-                                              : Color.Default;
+                                    // var color = s == "WIN" ? Color.Success
+                                    //           : s == "LOSS" ? Color.Error
+                                    //           : s == "OPEN" ? Color.Warning
+                                    //           : Color.Default;
+                                    var chipClass = $"tl-chip tl-chip-{s.ToLowerInvariant()}";
                                 }
 
-                                <MudChip T="string" Size="MudBlazor.Size.Small" Color="@color" Variant="Variant.Filled">
+                                    
+
+                                <MudChip T="string"
+                                         Size="Size.Small"
+                                         Variant="Variant.Filled"
+                                         Color="Color.Default"
+                                         Class="@chipClass">
                                     @s
                                 </MudChip>
 
+
+
                             </MudTd>
 
                             <MudTd Class="tl-nowrap">
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">@context.OpenDate.ToString("yyyy-MM-dd")</MudText>
+                                <MudText Typo="Typo.body2" Class="tl-date">@context.OpenDate.ToString("yyyy-MM-dd")</MudText>
                             </MudTd>
 
                             <MudTd Class="tl-nowrap">
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                <MudText Typo="Typo.body2" Class="tl-date">
                                     @(context.CloseDate is null
                                                                     ? "—"
                                                                     : context.CloseDate.Value.ToString("yyyy-MM-dd"))
                                 </MudText>
                             </MudTd>
 
-                                <MudTd Class="tl-nowrap">
-                                <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                    @context.Expiration.ToString("yyyy-MM-dd")
-                                </MudText>
+                            <MudTd Class="tl-nowrap">
+                            <MudText Typo="Typo.body2" Class="tl-date">
+                                @context.Expiration.ToString("yyyy-MM-dd")
+                            </MudText>
                             </MudTd>
 
                             <MudTd>@context.Underlying</MudTd>
-                            <MudTd>@RightLetter(context.Right)</MudTd>
-                                <MudTd Class="tl-nowrap">
-                                <MudText Style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
-                                    @($"{context.ShortStrike} / {context.LongStrike}")
-                                </MudText>
+                            <MudTd class="tl-col-putcall">@context.Right</MudTd>
+
+                                <MudTd Class="tl-col-strikes" DataLabel="Strikes">
+                                    <MudText Typo="Typo.body2" Class="tl-nowrap">
+                                        <b>@context.ShortStrike.ToString("0")</b>/@context.LongStrike.ToString("0")
+                                    </MudText>
+                                </MudTd>
+
+                            <MudTd class="tl-col-fees" align="Align.Right">@context.TotalFees.ToString("0.00")</MudTd>
+                            <MudTd align="Align.Right">
+                                    <MudText Typo="Typo.body2" Class="@(context.ReturnGross >= 0 ? "tl-pos" : "tl-neg")">
+                                        @context.ReturnGross.ToString("0.00")
+                                    </MudText>
+
                             </MudTd>
 
-                            <MudTd align="Align.Right">@context.TotalFees.ToString("0.00")</MudTd>
-                            <MudTd Align="Align.Right">
-                                <MudText Typo="Typo.body2" Color="@(context.ReturnGross >= 0 ? Color.Success : Color.Error)">
-                                    @context.ReturnGross.ToString("0.00")
-                                </MudText>
-                            </MudTd>
-
-                            <MudTd Align="Align.Right">
+                            <MudTd align="Align.Right">
                                 @if (context.NetReturnPct is { } pct)
                                 {
-                                    <MudText Typo="Typo.body2" Color="@(pct >= 0 ? Color.Success : Color.Error)">
+                                    <MudText Typo="Typo.body2" Class="@(pct >= 0 ? "tl-pos" : "tl-neg")">
                                         @($"{pct:0.00}%")
                                     </MudText>
                                 }
                                 else
                                 {
-                                    <MudText Color="Color.Secondary">—</MudText>
+                                    <MudText Class="tl-date">—</MudText>
                                 }
                             </MudTd>
 
@@ -270,7 +319,7 @@
         try
         {
             _vm = await Svc.GetDashboard(_broker, _account, take: 200);
-            
+            BuildKpiCharts();
 
             // Build execution totals for the trades currently shown
         }
@@ -358,4 +407,187 @@
     }
 
     private EventCallback<TableRowClickEventArgs<TradeRow>> _rowClickCb;
+
+    private double[] _sparkNetPl = Array.Empty<double>();
+    private double[] _sparkGross = Array.Empty<double>();
+    private double[] _donutWinLoss = Array.Empty<double>();
+    private string[] _sparkNetPlLabels = Array.Empty<string>();
+    private string[] _sparkGrossLabels = Array.Empty<string>();
+    private string[] _sparkPfLabels = Array.Empty<string>();
+
+    private void BuildKpiCharts()
+    {
+        if (_vm is null || _vm.Trades is null || _vm.Trades.Count == 0)
+        {
+            _sparkNetPl = Array.Empty<double>();
+            _sparkGross = Array.Empty<double>();
+            _sparkNetPlLabels = Array.Empty<string>();
+            _sparkGrossLabels = Array.Empty<string>();
+            _sparkPf = Array.Empty<double>();
+            _sparkPfLabels = Array.Empty<string>();
+            _donutWinLoss = new double[] { 0, 0 };
+            return;
+        }
+
+        // Use a stable chronological order for sparklines
+        var ordered = _vm.Trades.OrderBy(t => t.OpenDate).ToList();
+
+        // =========================
+        // Net P/L (cumulative) — (C)
+        // =========================
+        var netAll = Cumulative(ordered.Select(t => (double)t.NetPL)).ToArray();
+        var netLabelsAll = ordered
+            .Select(t => t.OpenDate.ToString("yyyy-MM-dd"))
+            .ToArray();
+
+        var netSkip = Math.Max(0, netAll.Length - 30);
+        _sparkNetPl = netAll.Skip(netSkip).ToArray();
+        _sparkNetPlLabels = netLabelsAll.Skip(netSkip).ToArray();
+
+        // =========================
+        // Gross Return (cumulative) — (C)
+        // =========================
+        var grossAll = Cumulative(ordered.Select(t => (double)t.ReturnGross)).ToArray();
+        var grossLabelsAll = ordered
+            .Select(t => t.OpenDate.ToString("yyyy-MM-dd"))
+            .ToArray();
+
+        var grossSkip = Math.Max(0, grossAll.Length - 30);
+        _sparkGross = grossAll.Skip(grossSkip).ToArray();
+        _sparkGrossLabels = grossLabelsAll.Skip(grossSkip).ToArray();
+
+        // =========================
+        // Donut: win vs loss (CLOSED only)
+        // =========================
+        var closed = ordered.Where(t => t.CloseDate is not null).ToList();
+        var wins = closed.Count(t => t.NetPL > 0m);
+        var losses = closed.Count(t => t.NetPL < 0m);
+
+        _donutWinLoss = new double[] { wins, losses };
+
+        // =========================
+        // Profit Factor (rolling, CLOSED only) — (C)
+        // =========================
+        // Profit Factor sparkline should match headline PF: cumulative PF-to-date (CLOSED only)
+        var pfAll = CumulativeProfitFactor(ordered).ToArray();
+
+        var pfLabelsAll = closed
+            .Select(t => t.CloseDate!.Value.ToString("yyyy-MM-dd"))
+            .ToArray();
+
+        var pfSkip = Math.Max(0, pfAll.Length - 30);
+        _sparkPf = pfAll.Skip(pfSkip).ToArray();
+        _sparkPfLabels = pfLabelsAll.Skip(pfSkip).ToArray();
+    }
+
+
+    static IEnumerable<double> CumulativeProfitFactor(List<TradeRow> ordered)
+    {
+        // CLOSED only, like your other PF calc should be
+        var closed = ordered.Where(t => t.CloseDate is not null).ToList();
+        if (closed.Count == 0) yield break;
+
+        double gains = 0;
+        double losses = 0;
+
+        foreach (var t in closed)
+        {
+            var pl = (double)t.NetPL;
+            if (pl > 0) gains += pl;
+            else if (pl < 0) losses += -pl;
+
+            // PF = gains / losses
+            var pf = losses <= 0.000001
+                ? (gains > 0 ? 99 : 0)
+                : gains / losses;
+
+            // optional: clamp for chart stability (TraderSync usually doesn’t clamp hard)
+            pf = Math.Min(pf, 10);
+
+            yield return pf;
+        }
+    }
+
+    static IEnumerable<double> Cumulative(IEnumerable<double> xs)
+    {
+        double acc = 0;
+        foreach (var x in xs) { acc += x; yield return acc; }
+    }
+
+    static IEnumerable<double> RollingProfitFactor(List<TradeRow> ordered, int window)
+    {
+        // Use CLOSED trades only so PF isn’t polluted by OPEN rows
+        var closed = ordered.Where(t => t.CloseDate is not null).ToList();
+
+        if (closed.Count == 0)
+            yield break;
+
+        for (int i = 0; i < closed.Count; i++)
+        {
+            var start = Math.Max(0, i - window + 1);
+            var slice = closed.Skip(start).Take(i - start + 1);
+
+            double gains = slice.Where(t => t.NetPL > 0m).Sum(t => (double)t.NetPL);
+            double losses = slice.Where(t => t.NetPL < 0m).Sum(t => (double)(-t.NetPL));
+
+            // PF = gains / losses. Handle divide-by-zero cleanly.
+            var pf = losses <= 0.000001 ? (gains > 0 ? 99 : 0) : gains / losses;
+
+            // Clamp so the sparkline doesn’t go crazy on small sample sizes
+            pf = Math.Min(pf, 10);
+
+            yield return pf;
+        }
+    }
+
+    private int SparkTrend(double[] s)
+    {
+        if (s is null || s.Length < 2) return 0;
+        var a = s[^2];
+        var b = s[^1];
+        if (b > a) return 1;
+        if (b < a) return -1;
+        return 0;
+    }
+
+    private int WinRateTrend()
+    {
+        if (_vm is null || _vm.Trades is null) return 0;
+
+        var closed = _vm.Trades
+            .Where(t => t.CloseDate is not null)
+            .OrderBy(t => t.CloseDate)
+            .ToList();
+
+        if (closed.Count < 6) return 0;
+
+        // compare last 5 vs previous 5 (simple, stable, feels right)
+        var last5 = closed.TakeLast(5).ToList();
+        var prev5 = closed.Skip(Math.Max(0, closed.Count - 10)).Take(5).ToList();
+
+        decimal WinRate(List<TradeRow> xs)
+        {
+            var w = xs.Count(t => t.NetPL > 0m);
+            var l = xs.Count(t => t.NetPL < 0m);
+            var n = w + l;
+            return n == 0 ? 0m : (decimal)w / n;
+        }
+
+        var r1 = WinRate(prev5);
+        var r2 = WinRate(last5);
+
+        if (r2 > r1) return 1;
+        if (r2 < r1) return -1;
+        return 0;
+    }
+    private static double[] LastN(IEnumerable<double> values, int n)
+    {
+        var arr = values.ToArray();
+        if (arr.Length <= n) return arr;
+        return arr.Skip(arr.Length - n).ToArray();
+    }
+    private double[] _sparkPf = Array.Empty<double>();
+
+    
+
 }

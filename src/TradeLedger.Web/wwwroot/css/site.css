@@ -1,4 +1,4 @@
-@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -122,21 +122,7 @@ a, .btn-link {
 .mud-table-dense * {
     font-size: 0.9rem;
 }
-/* KPI cards */
-.tl-kpi-card {
-    position: relative;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 12px;
-}
 
-.tl-kpi-accent {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 4px;
-    height: 100%;
-    border-radius: 12px 0 0 12px;
-}
 
 .accent-blue {
     background: #2563eb;
@@ -166,19 +152,35 @@ a, .btn-link {
 
 /* Table sizing */
 .tl-trades-table {
-    min-width: 1100px; /* adjust if needed */
+    width: 100%;
+    table-layout: fixed;
 }
 
-    /* Prevent wrapping inside cells */
-    .tl-trades-table th,
-    .tl-trades-table td {
-        white-space: nowrap;
-    }
 
-/* Kill horizontal overflow caused by MudLayout containers */
-.mud-layout,
-.mud-main-content,
-.mud-container,
+/* Prevent wrapping inside cells */
+.tl-trades-table th,
+.tl-trades-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+/* Column widths (tweak as desired) */
+.tl-col-putcall {
+    width: 20px;
+}
+/* "Put" / "Call" */
+/* Strikes: give it room */
+/* Trades table: Strikes should NEVER ellipsis */
+.tl-trades-table th.tl-col-strikes,
+.tl-trades-table td.tl-col-strikes {
+    overflow: visible !important;
+    text-overflow: unset !important;
+    white-space: nowrap !important;
+}/* "6850 / 6845" */
+.tl-col-fees {
+    width: 75px;
+}
+/* 29.32 */
 
 .tl-drawer .mud-nav-link {
     border-radius: 10px;
@@ -240,6 +242,589 @@ a, .btn-link {
 .tl-detail-cell {
     max-width: 0; /* critical */
 }
+.tl-chip {
+    font-weight: 600;
+    font-size: 0.72rem;
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.tl-chip-win {
+    color: #1e7f55;
+    border-color: #b7e3d0;
+    background-color: #f3faf7;
+}
+
+.tl-chip-loss {
+    color: #b42318;
+    border-color: #f3c2c2;
+    background-color: #fdf4f4;
+}
+
+.tl-chip-open {
+    color: #6b7280;
+    border-color: #e5e7eb;
+    background-color: #f9fafb;
+}
+
+/* Make sure our custom chip styles win against MudBlazor defaults */
+.tl-chip.mud-chip {
+    border: 1px solid transparent;
+}
+
+.tl-chip-win.mud-chip {
+    color: #1e7f55 !important;
+    border-color: #b7e3d0 !important;
+    background-color: #f3faf7 !important;
+}
+
+.tl-chip-loss.mud-chip {
+    color: #b42318 !important;
+    border-color: #f3c2c2 !important;
+    background-color: #fdf4f4 !important;
+}
+
+.tl-chip-open.mud-chip {
+    color: #6b7280 !important;
+    border-color: #e5e7eb !important;
+    background-color: #f9fafb !important;
+}
+
+.tl-chip-flat.mud-chip {
+    color: #6b7280 !important;
+    border-color: #e5e7eb !important;
+    background-color: #f9fafb !important;
+}
+.tl-date {
+    color: #64748b; /* muted slate */
+    font-weight: 500;
+}
+.tl-pos {
+    color: #1f7a4d;
+    font-weight: 500;
+}
+/* softer green */
+.tl-neg {
+    color: #b42318;
+    font-weight: 500;
+}
+/* softer red   */
+/* =========================
+   Trade status chips (WIN/LOSS/OPEN)
+   Put this at the VERY END of site.css
+   ========================= */
+
+/* MudChip renders as .mud-chip-root (v7) or .mud-chip (older).
+   Hit both and force our palette. */
+.tl-chip.mud-chip-root,
+.tl-chip.mud-chip {
+    font-weight: 600;
+    font-size: 0.72rem;
+    border-radius: 999px;
+    padding: 2px 8px;
+    border: 1px solid transparent;
+}
+
+/* WIN */
+.tl-chip-win.mud-chip-root,
+.tl-chip-win.mud-chip {
+    color: #1e7f55 !important;
+    background-color: #f3faf7 !important;
+    border-color: #b7e3d0 !important;
+}
+
+/* LOSS */
+.tl-chip-loss.mud-chip-root,
+.tl-chip-loss.mud-chip {
+    color: #b42318 !important;
+    background-color: #fdf4f4 !important;
+    border-color: #f3c2c2 !important;
+}
+
+/* OPEN */
+.tl-chip-open.mud-chip-root,
+.tl-chip-open.mud-chip {
+    color: #6b7280 !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+
+/* FLAT */
+.tl-chip-flat.mud-chip-root,
+.tl-chip-flat.mud-chip {
+    color: #6b7280 !important;
+    background-color: #f9fafb !important;
+    border-color: #e5e7eb !important;
+}
+/* Trades table dates: darker + slightly smaller like TraderSync */
+.tl-trades-table .tl-date {
+    color: rgba(15, 23, 42, 0.72) !important; /* darker slate */
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+    line-height: 1.2;
+}
+
+html, body {
+    overflow-x: hidden;
+}
+
+/* =========================
+   KPI strip (authoritative)
+   Put this at the VERY END of site.css
+   ========================= */
+/* =========================
+   KPI strip — compact (TraderSync-ish)
+   ========================= */
+
+.tl-kpi-strip {
+    display: flex;
+    gap: 12px;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    overflow: visible !important;
+}
+
+.tl-kpi-item {
+    flex: 1 1 180px;
+    min-width: 180px;
+}
+
+/* Card */
+.tl-kpi-card {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    height: 84px; /* ✅ smaller */
+    min-height: 84px;
+    overflow: visible;
+    border: 1px solid rgba(15,23,42,.08);
+    border-radius: 12px;
+}
+
+/* Accent */
+.tl-kpi-accent {
+    position: absolute;
+    left: 0;
+    top: 8px;
+    bottom: 8px;
+    width: 4px;
+    border-radius: 4px;
+}
+
+/* Layout */
+.tl-kpi-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 10px 10px 14px;
+    gap: 10px;
+}
+
+/* Left text */
+.tl-kpi-left {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tl-kpi-title {
+    font-size: .76rem;
+    line-height: 1.05;
+    color: rgba(15,23,42,.70);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tl-kpi-value {
+    font-size: 1.05rem; /* ✅ tighter */
+    font-weight: 700;
+    line-height: 1.1;
+    color: #0f172a;
+}
+
+.tl-kpi-sub {
+    font-size: .70rem;
+    line-height: 1.0;
+    color: rgba(15,23,42,.55);
+}
+
+/* Right side */
+.tl-kpi-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow: visible;
+}
+
+/* Viz sizing */
+.tl-kpi-viz-donut {
+    width: 46px;
+    height: 46px;
+}
+
+.tl-kpi-viz-spark {
+    width: 104px; /* ✅ slightly smaller */
+    height: 34px;
+}
+
+/* Make Sparkline host match the slot */
+.tl-kpi-viz-spark .tl-spark-host {
+    display: block;
+    width: 104px;
+    height: 34px;
+}
 
 
-    
+/* TraderSync-ish sparkline */
+.tl-spark {
+    position: relative;
+}
+
+.tl-spark-line {
+    stroke-width: 3.5px;
+}
+
+.tl-spark-line.is-hover {
+    stroke-width: 5px;
+    filter: drop-shadow(0 0 1.5px rgba(0,0,0,.18));
+}
+
+/* Hover dot */
+.tl-spark-dot {
+    fill: #E5E7EB;
+    stroke: #64748B;
+    stroke-width: 1;
+}
+
+
+.tl-spark-tooltip-title {
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: rgba(15, 23, 42, .75);
+}
+
+.tl-spark-tooltip-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tl-spark-tooltip-marker {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: #CBD5E1;
+    flex: 0 0 auto;
+}
+
+.tl-spark-tooltip-label {
+    color: rgba(15, 23, 42, .70);
+}
+
+.tl-spark-tooltip-value {
+    margin-left: auto;
+    font-weight: 600;
+    color: #2563eb;
+}
+
+
+/* Make sure KPI containers don't clip absolute children */
+.tl-kpi-card,
+.tl-kpi-inner,
+.tl-kpi-right {
+    overflow: visible !important;
+}
+
+/* =========================
+   Sparkline tooltip OUTSIDE chart (#3)
+   ========================= */
+
+/* Host must be relative so absolute tooltip uses this coordinate space */
+.tl-spark-host {
+    position: relative;
+    display: inline-block;
+    overflow: visible !important;
+}
+
+
+/* ===== #3: Smart edge-aware arrows + smooth fade/slide ===== */
+
+/* Base tooltip already defined above.
+   These add animation + arrow support using:
+   - classes: is-visible, is-above, is-below
+   - css var: --arrow-x (px inside tooltip) */
+/* Tooltip box (NO translateX here because left=boxLeft now) */
+.tl-spark-tooltip {
+    position: absolute;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.72rem;
+    color: #0f172a;
+    pointer-events: none;
+    white-space: nowrap;
+    min-width: 150px;
+    z-index: 9999;
+    box-shadow: 0 4px 8px rgba(0,0,0,.08), 0 10px 20px rgba(0,0,0,.12);
+    /* smooth fade/slide */
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.tl-spark-tooltip.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Arrow: default position uses CSS var --arrow-x (px from left edge) */
+.tl-spark-tooltip::after {
+    content: "";
+    position: absolute;
+    left: var(--arrow-x, 24px);
+    width: 0;
+    height: 0;
+}
+
+/* Tooltip above dot => arrow points DOWN (at bottom edge) */
+.tl-spark-tooltip.is-above::after {
+    bottom: -6px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #F8FAFC;
+    filter: drop-shadow(0 2px 1px rgba(0,0,0,.10));
+}
+
+/* Tooltip below dot => arrow points UP (at top edge) */
+.tl-spark-tooltip.is-below::after {
+    top: -6px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #F8FAFC;
+    filter: drop-shadow(0 -2px 1px rgba(0,0,0,.10));
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .tl-spark-tooltip {
+        transition: none;
+    }
+}
+
+/* =========================
+   Sparkline tooltip (FINAL)
+   ========================= */
+
+/* Make sure nothing clips it */
+.tl-kpi-card,
+.tl-kpi-inner,
+.tl-kpi-right {
+    overflow: visible !important;
+}
+
+/* Tooltip box - positioned by inline left/top (px) */
+.tl-spark-tooltip {
+    position: absolute;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 0.72rem;
+    color: #0f172a;
+    pointer-events: none;
+    white-space: nowrap;
+    min-width: 150px;
+    z-index: 9999;
+    box-shadow: 0 4px 8px rgba(0,0,0,.08), 0 10px 20px rgba(0,0,0,.12);
+    /* IMPORTANT: do NOT center with translateX anymore */
+    transform: translateY(4px);
+    opacity: 0;
+    transition: opacity 120ms ease, transform 120ms ease;
+}
+
+.tl-spark-tooltip.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Arrow */
+.tl-spark-tooltip::after {
+    left: calc(var(--arrow-x, 24px) - 6px); /* center the 12px triangle */
+}
+
+.tl-spark-tooltip.is-above::after {
+    bottom: -6px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #F8FAFC;
+    filter: drop-shadow(0 2px 1px rgba(0,0,0,.10));
+}
+
+.tl-spark-tooltip.is-below::after {
+    top: -6px;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #F8FAFC;
+    filter: drop-shadow(0 -2px 1px rgba(0,0,0,.10));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tl-spark-tooltip {
+        transition: none;
+    }
+}
+
+
+
+/* =========================
+KPI Donut – kill legend completely
+========================= */
+
+/* Any legend generated by MudChart inside KPI cards */
+.tl-kpi-card .mud-chart-legend,
+.tl-kpi-card .mud-chart-legend-container,
+.tl-kpi-card .mud-chart-legend-item,
+.tl-kpi-card .mud-chart-legend text,
+.tl-kpi-card .mud-chart-legend svg,
+.tl-kpi-card .mud-chart-legend * {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+/* KPI donut is decorative: disable hover tooltips */
+.tl-kpi-donut,
+.tl-kpi-donut * {
+    pointer-events: none !important;
+}
+
+/* Donut cards only: fixed lane so donut doesn't hug the edge */
+.tl-kpi-card.has-donut .tl-kpi-right {
+    width: 72px;
+    justify-content: center;
+    margin-left: 8px;
+}
+
+/* Sparkline cards: allow natural width */
+.tl-kpi-card:not(.has-donut) .tl-kpi-right {
+    width: auto;
+}
+
+/* Ensure donut slot doesn't stretch and is centered */
+.tl-kpi-viz-donut {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* MudChart sometimes renders as inline-block; force block centering */
+.tl-kpi-donut {
+    display: block;
+    margin: 0 auto;
+}
+
+
+
+/* Extra safety: legends rendered after the chart */
+.mud-chart-legend {
+    display: none !important;
+}
+
+.tl-kpi-trend {
+    font-size: .75rem;
+    margin-left: 6px;
+    font-weight: 700;
+}
+
+.tl-kpi-trend.up {
+    color: #16a34a;
+}
+
+.tl-kpi-trend.down {
+    color: #dc2626;
+}
+
+.tl-kpi-trend.flat {
+    color: #64748b;
+}
+
+.tl-opt-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: .72rem;
+    font-weight: 700;
+    line-height: 18px;
+    border: 1px solid rgba(15,23,42,.12);
+}
+
+.tl-opt-put {
+    color: #b42318;
+    background: #fdf4f4;
+    border-color: #f3c2c2;
+}
+
+.tl-opt-call {
+    color: #1d4ed8;
+    background: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.tl-opt-unk {
+    color: #64748b;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.tl-muted {
+    color: #94a3b8;
+}
+
+.tl-ellipsis {
+    display: inline-block;
+    max-width: 520px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.tl-exec-summary {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    color: rgba(15,23,42,.70);
+    font-weight: 600;
+}
+
+.tl-opt {
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.tl-put {
+    background: #ffecec;
+    color: #c62828;
+}
+
+.tl-call {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.tl-strikes {
+    max-width: 140px;
+    text-align: center;
+}
