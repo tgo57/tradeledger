@@ -53,6 +53,14 @@
                                TooltipTitle="@Title"
                                SeriesLabel="@Title" />
                 </div>
+                @* <div class="tl-kpi-viz tl-kpi-viz-spark tl-kpi-spark-host">
+                    <MudChart ChartType="ChartType.Line"
+                              ChartSeries="@SparkSeries"
+                              XAxisLabels="@EffectiveSparkLabels"
+                              Width="120px"
+                              Height="40px"
+                              Class="tl-kpi-inline-chart" />
+                </div> *@
             }
 
             @* Debug (temporary) *@
@@ -90,18 +98,18 @@
     // ✅ ADD
     [Parameter] public string[] SparkLabels { get; set; } = Array.Empty<string>();
 
-    private List<ChartSeries> SparkSeries =>
-    Sparkline is null
-        ? new()
-        : new()
-        {
-            new ChartSeries
-            {
-                Name = "",
-                Data = Sparkline,
-                //Color = "#2563eb" // TraderSync-style blue
-            }
-        };
+    // private List<ChartSeries> SparkSeries =>
+    // Sparkline is null
+    //     ? new()
+    //     : new()
+    //     {
+    //         new ChartSeries
+    //         {
+    //             Name = "",
+    //             Data = Sparkline,
+    //             //Color = "#2563eb" // TraderSync-style blue
+    //         }
+    //     };
 
     private string RootClass
     {
@@ -130,4 +138,40 @@
         string.IsNullOrWhiteSpace(AccentClass) ? "tl-kpi-accent" : $"tl-kpi-accent {AccentClass}";
 
     
+
+    private List<ChartSeries> SparkSeries =>
+    Sparkline is null || Sparkline.Length == 0
+        ? new()
+        : new()
+        {
+            new ChartSeries
+            {
+                Name = Title,
+                Data = NormalizeForSparkline(Sparkline)
+            }
+        };
+
+    private string[] EffectiveSparkLabels =>
+        Sparkline is null
+            ? Array.Empty<string>()
+            : Enumerable.Range(1, Sparkline.Length)
+                .Select(_ => "")
+                .ToArray();
+
+    private double[] NormalizeForSparkline(double[] values)
+    {
+        if (values.Length == 0)
+            return Array.Empty<double>();
+
+        var min = values.Min();
+        var max = values.Max();
+        var range = max - min;
+
+        if (range == 0)
+            return values.Select(_ => 50d).ToArray();
+
+        return values
+            .Select(v => ((v - min) / range) * 100d)
+            .ToArray();
+    }
 }

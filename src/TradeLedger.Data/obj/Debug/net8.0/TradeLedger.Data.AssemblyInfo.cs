@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TradeLedger.Data")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a3c26bf9752469deb2e0c5f8838b4ac3075a816b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d8a541fa823c2c9c9cecefb55e177cbb0caa1f34")]
 [assembly: System.Reflection.AssemblyProductAttribute("TradeLedger.Data")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TradeLedger.Data")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

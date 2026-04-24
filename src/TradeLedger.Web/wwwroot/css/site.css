@@ -828,3 +828,33 @@ KPI Donut – kill legend completely
     max-width: 140px;
     text-align: center;
 }
+
+.tl-kpi-viz-spark {
+    width: 104px;
+    min-width: 104px;
+    height: 34px;
+    min-height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.tl-kpi-inline-chart {
+    width: 104px !important;
+    height: 34px !important;
+}
+.tl-kpi-viz-spark {
+    width: 120px;
+    min-width: 120px;
+    height: 40px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tl-kpi-inline-chart {
+    width: 120px !important;
+    height: 40px !important;
+}

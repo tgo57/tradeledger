@@ -65,7 +65,6 @@ E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\staticwebassets.bui
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\staticwebassets.build.json.cache
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\staticwebassets.development.json
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\swae.build.ex.cache
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\TradeLed.EA2B78CB.Up2Date
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\TradeLedger.Web.dll
@@ -73,3 +72,17 @@ E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\refint\TradeLedger.
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\TradeLedger.Web.pdb
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\TradeLedger.Web.genruntimeconfig.cache
 E:\Projects\TradeLedger\src\TradeLedger.Web\obj\Debug\net8.0\ref\TradeLedger.Web.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Authorization.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Components.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Components.Forms.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Components.Web.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.AspNetCore.Metadata.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.Caching.Memory.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.Localization.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.Localization.Abstractions.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.Logging.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.Extensions.Options.dll
+E:\Projects\TradeLedger\src\TradeLedger.Web\bin\Debug\net8.0\Microsoft.JSInterop.dll
