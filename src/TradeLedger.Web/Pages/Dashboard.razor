@@ -52,12 +52,13 @@
 
             <div class="tl-kpi-item">
                 <KpiCard Title="Profit Factor"
-                         Value="@_vm.Kpi_ProfitFactor.ToString("0.00")"
+                         Value="@(_vm.Kpi_ProfitFactor == 0m ? "—" : _vm.Kpi_ProfitFactor.ToString("0.00"))"
                          AccentClass="@(
-                         _vm.Kpi_ProfitFactor >= 1.5m ? "accent-green" :
-                         _vm.Kpi_ProfitFactor >= 1.0m ? "accent-gray" :
+                            _vm.Kpi_ProfitFactor == 0m ? "accent-gray" :
+                            _vm.Kpi_ProfitFactor >= 1.5m ? "accent-green" :
+                            _vm.Kpi_ProfitFactor >= 0.5m ? "accent-gray" :
                          "accent-red"
-                  )"
+                        )"
                      ShowSparkline="true"
                      Trend="@SparkTrend(_sparkPf)"
                      ShowTrend="true"
@@ -97,7 +98,7 @@
             @* <div class="tl-kpi-item">
                 <KpiCard Title="Trades"
                          Value="@_vm.Kpi_Trades.ToString()"
-                         AccentClass="accent-gray" />
+                         AccentClass="accent-blue" />
             </div> *@
         </div>
 
@@ -463,7 +464,7 @@
         var wins = closed.Count(t => t.NetPL > 0m);
         var losses = closed.Count(t => t.NetPL < 0m);
 
-        _donutWinLoss = new double[] { wins, losses };
+        _donutWinLoss = new double[] { Math.Max(wins, 0.001), Math.Max(losses, 0.001) };
 
         // =========================
         // Profit Factor (rolling, CLOSED only) — (C)

@@ -844,3 +844,6 @@ KPI Donut – kill legend completely
 .tl-kpi-strip {
     overflow: visible !important;
 }
+.accent-blue {
+    background: #2563eb;
+}

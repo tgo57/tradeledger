@@ -110,9 +110,10 @@
         ? Labels[_hoverIndex]
         : (_hoverIndex >= 0 ? $"#{_hoverIndex + 1}" : "");
 
+   
     private string HoverValue => _hoverIndex >= 0
-        ? Data[_hoverIndex].ToString("N2")
-        : "";
+    ? Data[_hoverIndex].ToString("N2")
+    : "";
 
     protected override void OnParametersSet() => Rebuild();
 
