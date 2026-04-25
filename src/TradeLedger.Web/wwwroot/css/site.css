@@ -847,3 +847,60 @@ KPI Donut – kill legend completely
 .accent-blue {
     background: #2563eb;
 }
+
+/* =========================
+   Year / Monthly stat rows
+   Add to bottom of site.css
+   ========================= */
+
+.tl-panel-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(15,23,42,.50);
+}
+
+.tl-stat-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.tl-stat-label {
+    font-size: 0.78rem;
+    color: rgba(15,23,42,.60);
+    width: 56px;
+    flex-shrink: 0;
+}
+
+.tl-stat-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: rgba(15,23,42,.06);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.tl-stat-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+}
+
+.tl-stat-bar-pos {
+    background: linear-gradient(90deg, #16a34a, #22c55e);
+}
+
+.tl-stat-bar-neg {
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+}
+
+.tl-stat-value {
+    font-size: 0.80rem;
+    font-weight: 600;
+    width: 64px;
+    text-align: right;
+    flex-shrink: 0;
+}

@@ -249,31 +249,60 @@
             <MudItem xs="12" md="3">
                 <MudStack Spacing="2">
 
+                    @*  =============================================
+                        Replace your existing Year + Monthly MudPaper
+                        blocks in Dashboard.razor with these two.
+                        ============================================= *@
+
+                    @* --- YEAR --- *@
                     <MudPaper Class="pa-3">
-                        <MudText Typo="Typo.subtitle1">Year</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="tl-panel-title">Year</MudText>
                         <MudDivider Class="my-2" />
+                        @{
+                            var maxYear = _vm.ByYear.Any() ? (double)_vm.ByYear.Max(r => Math.Abs(r.Value)) : 1.0;
+                            if (maxYear == 0) maxYear = 1;
+                        }
                         @foreach (var r in _vm.ByYear)
                         {
-                            <MudStack Row="true" AlignItems="AlignItems.Center">
-                                <MudText>@r.Label</MudText>
-                                <MudSpacer />
-                                <MudText>@r.Value.ToString("0.00")</MudText>
-                            </MudStack>
+                            <div class="tl-stat-row">
+                                <span class="tl-stat-label">@r.Label</span>
+                                <div class="tl-stat-bar-wrap">
+                                    <div class="tl-stat-bar @(r.Value >= 0 ? "tl-stat-bar-pos" : "tl-stat-bar-neg")"
+                                         style="width:@((Math.Abs((double)r.Value) / maxYear * 100).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%">
+                                    </div>
+                                </div>
+                                <span class="tl-stat-value @(r.Value >= 0 ? "tl-pos" : "tl-neg")">
+                                    $@r.Value.ToString("N0")
+                                </span>
+                            </div>
                         }
                     </MudPaper>
 
+                    @* --- MONTHLY --- *@
                     <MudPaper Class="pa-3">
-                        <MudText Typo="Typo.subtitle1">Monthly</MudText>
+                        <MudText Typo="Typo.subtitle1" Class="tl-panel-title">Monthly</MudText>
                         <MudDivider Class="my-2" />
-                        @foreach (var r in _vm.ByMonth.TakeLast(12))
+                        @{
+                            var recentMonths = _vm.ByMonth.TakeLast(12).ToList();
+                            var maxMonth = recentMonths.Any() ? (double)recentMonths.Max(r => Math.Abs(r.Value)) : 1.0;
+                            if (maxMonth == 0) maxMonth = 1;
+                        }
+                        @foreach (var r in recentMonths)
                         {
-                            <MudStack Row="true" AlignItems="AlignItems.Center">
-                                <MudText>@r.Label</MudText>
-                                <MudSpacer />
-                                <MudText>@r.Value.ToString("0.00")</MudText>
-                            </MudStack>
+                            <div class="tl-stat-row">
+                                <span class="tl-stat-label">@r.Label</span>
+                                <div class="tl-stat-bar-wrap">
+                                    <div class="tl-stat-bar @(r.Value >= 0 ? "tl-stat-bar-pos" : "tl-stat-bar-neg")"
+                                         style="width:@((Math.Abs((double)r.Value) / maxMonth * 100).ToString("0.#", System.Globalization.CultureInfo.InvariantCulture))%">
+                                    </div>
+                                </div>
+                                <span class="tl-stat-value @(r.Value >= 0 ? "tl-pos" : "tl-neg")">
+                                    $@r.Value.ToString("N0")
+                                </span>
+                            </div>
                         }
                     </MudPaper>
+
 
                     <MudPaper Class="pa-3">
                         <MudText Typo="Typo.subtitle1">DTE Buckets</MudText>
