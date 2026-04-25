@@ -385,8 +385,8 @@ html, body {
 }
 
 .tl-kpi-item {
-    flex: 1 1 180px;
-    min-width: 180px;
+    flex: 1 1 220px;
+    min-width: 220px;
 }
 
 /* Card */
@@ -465,17 +465,7 @@ html, body {
     height: 46px;
 }
 
-.tl-kpi-viz-spark {
-    width: 104px; /* ✅ slightly smaller */
-    height: 34px;
-}
 
-/* Make Sparkline host match the slot */
-.tl-kpi-viz-spark .tl-spark-host {
-    display: block;
-    width: 104px;
-    height: 34px;
-}
 
 
 /* TraderSync-ish sparkline */
@@ -838,23 +828,19 @@ KPI Donut – kill legend completely
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    flex-shrink: 0;
 }
 
 .tl-kpi-inline-chart {
     width: 104px !important;
     height: 34px !important;
 }
-.tl-kpi-viz-spark {
-    width: 120px;
-    min-width: 120px;
-    height: 40px;
-    min-height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* Allow sparkline tooltip to escape card bounds */
+.tl-kpi-card .mud-paper {
+    overflow: visible !important;
 }
 
-.tl-kpi-inline-chart {
-    width: 120px !important;
-    height: 40px !important;
+.tl-kpi-item,
+.tl-kpi-strip {
+    overflow: visible !important;
 }

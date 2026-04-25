@@ -1,0 +1,206 @@
+﻿@using Microsoft.AspNetCore.Components
+@using System.Globalization
+
+<div class="tl-spark-host" style="width:@(WidthPx)px;height:@(HeightPx)px;position:relative;"
+     @onmouseleave="HideTooltip">
+
+    <svg viewBox="0 0 @WidthPx @HeightPx"
+         width="@WidthPx"
+         height="@HeightPx"
+         style="display:block;overflow:visible;">
+
+        <defs>
+            <linearGradient id="spark-line-@_id" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="@StartColor" />
+                <stop offset="100%" stop-color="@EndColor" />
+            </linearGradient>
+            <linearGradient id="spark-fill-@_id" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="@EndColor" stop-opacity="0.18" />
+                <stop offset="100%" stop-color="@EndColor" stop-opacity="0.00" />
+            </linearGradient>
+        </defs>
+
+        @if (_points.Count > 1)
+        {
+            @* Area fill *@
+            <path d="@AreaPath" fill="url(#spark-fill-@_id)" />
+
+            @* Line *@
+            <path d="@LinePath"
+                  fill="none"
+                  stroke="url(#spark-line-@_id)"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="tl-spark-line @(_hovering ? "is-hover" : "")" />
+
+            @* Invisible hit-area rects per segment for hover *@
+            @for (int i = 0; i < _points.Count; i++)
+            {
+                var idx = i;
+                var cx = _points[idx].X;
+                var cy = _points[idx].Y;
+                <circle cx="@F(cx)" cy="@F(cy)" r="10"
+                        fill="transparent"
+                        style="cursor:crosshair;"
+                        @onmousemove="@(e => ShowTooltip(idx, e))" />
+            }
+
+            @* Endpoint dot *@
+            <circle cx="@F(_points[^1].X)"
+                    cy="@F(_points[^1].Y)"
+                    r="3"
+                    fill="@EndColor"
+                    stroke="white"
+                    stroke-width="1.5" />
+
+            @* Hover dot *@
+            @if (_hoverIndex >= 0)
+            {
+                <circle cx="@F(_points[_hoverIndex].X)"
+                        cy="@F(_points[_hoverIndex].Y)"
+                        r="4"
+                        fill="white"
+                        stroke="@EndColor"
+                        stroke-width="2"
+                        class="tl-spark-dot" />
+            }
+        }
+    </svg>
+
+    @* Tooltip *@
+    @if (_hoverIndex >= 0)
+    {
+        var tip = TooltipStyle();
+        <div class="tl-spark-tooltip @tip.classes"
+             style="@tip.style">
+            <div class="tl-spark-tooltip-title">@TooltipTitle</div>
+            <div class="tl-spark-tooltip-row">
+                <span class="tl-spark-tooltip-marker" style="background:@EndColor;"></span>
+                <span class="tl-spark-tooltip-label">@HoverLabel</span>
+                <span class="tl-spark-tooltip-value">@HoverValue</span>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public double[] Data { get; set; } = Array.Empty<double>();
+    [Parameter] public string[] Labels { get; set; } = Array.Empty<string>();
+    [Parameter] public int WidthPx { get; set; } = 104;
+    [Parameter] public int HeightPx { get; set; } = 34;
+    [Parameter] public string StartColor { get; set; } = "#6D28D9";
+    [Parameter] public string EndColor { get; set; } = "#22C55E";
+    [Parameter] public string TooltipTitle { get; set; } = "";
+    [Parameter] public string SeriesLabel { get; set; } = "";
+
+    private readonly string _id = Guid.NewGuid().ToString("N")[..8];
+
+    private record Pt(double X, double Y);
+    private List<Pt> _points = new();
+    private string LinePath = "";
+    private string AreaPath = "";
+
+    private bool _hovering;
+    private int _hoverIndex = -1;
+    private double _hoverClientX;
+    private double _hoverClientY;
+
+    private string HoverLabel => (_hoverIndex >= 0 && _hoverIndex < Labels.Length)
+        ? Labels[_hoverIndex]
+        : (_hoverIndex >= 0 ? $"#{_hoverIndex + 1}" : "");
+
+    private string HoverValue => _hoverIndex >= 0
+        ? Data[_hoverIndex].ToString("N2")
+        : "";
+
+    protected override void OnParametersSet() => Rebuild();
+
+    private void Rebuild()
+    {
+        _points.Clear();
+        LinePath = "";
+        AreaPath = "";
+
+        if (Data is null || Data.Length < 2) return;
+
+        var pad = 4.0;
+        var w = WidthPx - pad * 2;
+        var h = HeightPx - pad * 2;
+
+        var min = Data.Min();
+        var max = Data.Max();
+        var range = max - min;
+        
+
+        if (range == 0)
+        {
+            // Flat line — all values identical, draw midline
+            for (int i = 0; i < Data.Length; i++)
+            {
+                var x = pad + (i / (double)(Data.Length - 1)) * w;
+                var y = pad + h / 2.0;
+                _points.Add(new Pt(x, y));
+            }
+        }
+        else
+        {
+            for (int i = 0; i < Data.Length; i++)
+            {
+                var x = pad + (i / (double)(Data.Length - 1)) * w;
+                var y = pad + h - ((Data[i] - min) / range) * h;
+                _points.Add(new Pt(x, y));
+            }
+        }
+
+        // Smooth line using cubic bezier
+        var sb = new System.Text.StringBuilder();
+        sb.Append($"M {F(_points[0].X)} {F(_points[0].Y)}");
+        for (int i = 1; i < _points.Count; i++)
+        {
+            var prev = _points[i - 1];
+            var curr = _points[i];
+            var cpx = (prev.X + curr.X) / 2.0;
+            sb.Append($" C {F(cpx)} {F(prev.Y)} {F(cpx)} {F(curr.Y)} {F(curr.X)} {F(curr.Y)}");
+        }
+        LinePath = sb.ToString();
+
+        // Area = line + close down to bottom
+        AreaPath = LinePath
+            + $" L {F(_points[^1].X)} {F(HeightPx - pad)}"
+            + $" L {F(_points[0].X)} {F(HeightPx - pad)} Z";
+    }
+
+    private void ShowTooltip(int index, MouseEventArgs e)
+    {
+        _hovering = true;
+        _hoverIndex = index;
+        _hoverClientX = e.ClientX;
+        _hoverClientY = e.ClientY;
+    }
+
+    private void HideTooltip()
+    {
+        _hovering = false;
+        _hoverIndex = -1;
+    }
+
+    private (string classes, string style) TooltipStyle()
+    {
+        if (_hoverIndex < 0 || _points.Count == 0)
+            return ("", "display:none;");
+
+        const double arrowH = 6;
+        const double gap = 8;
+        const double tipW = 155;
+
+        double left = Math.Max(0, _hoverClientX - 24);
+        double top = _hoverClientY + arrowH + gap;
+
+        var style = $"position:fixed;left:{F(left)}px;top:{F(top)}px;--arrow-x:24px;";
+        return ("is-visible is-below", style);
+    }
+
+    private static string F(double v) =>
+        v.ToString("0.##", CultureInfo.InvariantCulture);
+}

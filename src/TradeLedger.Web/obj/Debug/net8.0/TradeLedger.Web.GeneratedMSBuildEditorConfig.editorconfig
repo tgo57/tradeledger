@@ -47,6 +47,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXEtwaUNhcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[E:/Projects/TradeLedger/src/TradeLedger.Web/Shared/Sparkline.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFNwYXJrbGluZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [E:/Projects/TradeLedger/src/TradeLedger.Web/Shared/SurveyPrompt.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkXFN1cnZleVByb21wdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
