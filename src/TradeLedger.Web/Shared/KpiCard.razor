@@ -6,7 +6,6 @@
     <div class="tl-kpi-inner">
         <div class="tl-kpi-left">
             <div class="tl-kpi-title">@Title</div>
-            @* <div class="tl-kpi-value">@Value</div> *@
 
             <MudText Class="tl-kpi-value">
                 @Value
@@ -18,7 +17,6 @@
                 }
             </MudText>
 
-
             @if (!string.IsNullOrWhiteSpace(Subtext))
             {
                 <div class="tl-kpi-sub">@Subtext</div>
@@ -27,16 +25,50 @@
 
         <div class="tl-kpi-right">
 
-            @* Donut *@
+            @* SVG Donut — no MudChart, no spinner *@
             @if (ShowDonut && DonutParts?.Length == 2)
             {
+                var _total = DonutParts[0] + DonutParts[1];
+                var _win = _total == 0 ? 0.5 : DonutParts[0] / _total;
+                var _r = 20.0;
+                var _cx = 28.0;
+                var _cy = 28.0;
+                var _circ = 2 * Math.PI * _r;
+                var _winDash = _win * _circ;
+                var _losDash = _circ - _winDash;
+                var _inv = System.Globalization.CultureInfo.InvariantCulture;
+                var _offset = (_circ * 0.25).ToString("0.##", _inv);
+                var _winD = _winDash.ToString("0.##", _inv);
+                var _losD = _losDash.ToString("0.##", _inv);
+                var _cxS = _cx.ToString("0.##", _inv);
+                var _cyS = _cy.ToString("0.##", _inv);
+                var _rS = _r.ToString("0.##", _inv);
+                var _lbl = $"{_win * 100:0}%";
+
                 <div class="tl-kpi-viz tl-kpi-viz-donut">
-                    <MudChart ChartType="ChartType.Donut"
-                              InputData="DonutParts"
-                              InputLabels="DonutLabels"
-                              Width="56px"
-                              Height="56px"
-                              Class="tl-kpi-donut" />
+                    <svg width="56" height="56" viewBox="0 0 56 56">
+                        <circle cx="@_cxS" cy="@_cyS" r="@_rS"
+                                fill="none" stroke="#f1f5f9" stroke-width="7" />
+                        @if (_losDash > 0.5)
+                        {
+                            <circle cx="@_cxS" cy="@_cyS" r="@_rS"
+                                    fill="none" stroke="#fca5a5" stroke-width="7"
+                                    stroke-dasharray="@_losD @_winD"
+                                    stroke-dashoffset="@_offset"
+                                    stroke-linecap="round"
+                                    transform="rotate(180 @_cxS @_cyS)" />
+                        }
+                        <circle cx="@_cxS" cy="@_cyS" r="@_rS"
+                                fill="none" stroke="#22c55e" stroke-width="7"
+                                stroke-dasharray="@_winD @_losD"
+                                stroke-dashoffset="@_offset"
+                                stroke-linecap="round" />
+                        <text x="@_cxS" y="@_cyS"
+                              text-anchor="middle"
+                              dominant-baseline="middle"
+                              font-size="9" font-weight="700"
+                              fill="#0f172a">@_lbl</text>
+                    </svg>
                 </div>
             }
 
@@ -53,24 +85,7 @@
                                TooltipTitle="@Title"
                                SeriesLabel="@Title" />
                 </div>
-                @* <div class="tl-kpi-viz tl-kpi-viz-spark tl-kpi-spark-host">
-                    <MudChart ChartType="ChartType.Line"
-                              ChartSeries="@SparkSeries"
-                              XAxisLabels="@EffectiveSparkLabels"
-                              Width="120px"
-                              Height="40px"
-                              Class="tl-kpi-inline-chart" />
-                </div> *@
             }
-
-            @* Debug (temporary) *@
-            @* <div style="font-size:11px; opacity:.6;">
-                Donut: @ShowDonut parts=@(DonutParts?.Length ?? 0) |
-                Spark: @ShowSparkline len=@(Sparkline?.Length ?? 0)
-            </div>
-            <div style="font-size:14px; font-weight:700;">
-                KPI DEBUG ACTIVE
-            </div> *@
 
         </div>
     </div>
@@ -82,34 +97,17 @@
     [Parameter] public string AccentClass { get; set; } = "accent-gray";
     [Parameter] public string Class { get; set; } = "";
     [Parameter] public string? Subtext { get; set; }
-    [Parameter] public int Trend { get; set; } = 0; // -1 down, 0 flat, +1 up
+    [Parameter] public int Trend { get; set; } = 0;
     [Parameter] public bool ShowTrend { get; set; } = false;
     [Parameter] public string SparkSeriesLabel { get; set; } = "";
-    // Donut
+
     [Parameter] public bool ShowDonut { get; set; }
     [Parameter] public double[]? DonutParts { get; set; }
     [Parameter] public string[] DonutLabels { get; set; } = Array.Empty<string>();
 
-    // Sparkline
     [Parameter] public bool ShowSparkline { get; set; }
     [Parameter] public double[]? Sparkline { get; set; }
-
-
-    // ✅ ADD
     [Parameter] public string[] SparkLabels { get; set; } = Array.Empty<string>();
-
-    // private List<ChartSeries> SparkSeries =>
-    // Sparkline is null
-    //     ? new()
-    //     : new()
-    //     {
-    //         new ChartSeries
-    //         {
-    //             Name = "",
-    //             Data = Sparkline,
-    //             //Color = "#2563eb" // TraderSync-style blue
-    //         }
-    //     };
 
     private string RootClass
     {
@@ -122,7 +120,6 @@
             if (ShowDonut)
                 baseClass += " has-donut";
 
-            // ✅ ADD: trend class
             baseClass += Trend switch
             {
                 > 0 => " trend-up",
@@ -135,43 +132,17 @@
     }
 
     private string AccentBarClass =>
-        string.IsNullOrWhiteSpace(AccentClass) ? "tl-kpi-accent" : $"tl-kpi-accent {AccentClass}";
-
-    
-
-    private List<ChartSeries> SparkSeries =>
-    Sparkline is null || Sparkline.Length == 0
-        ? new()
-        : new()
-        {
-            new ChartSeries
-            {
-                Name = Title,
-                Data = NormalizeForSparkline(Sparkline)
-            }
-        };
-
-    private string[] EffectiveSparkLabels =>
-        Sparkline is null
-            ? Array.Empty<string>()
-            : Enumerable.Range(1, Sparkline.Length)
-                .Select(_ => "")
-                .ToArray();
+        string.IsNullOrWhiteSpace(AccentClass)
+            ? "tl-kpi-accent"
+            : $"tl-kpi-accent {AccentClass}";
 
     private double[] NormalizeForSparkline(double[] values)
     {
-        if (values.Length == 0)
-            return Array.Empty<double>();
-
+        if (values.Length == 0) return Array.Empty<double>();
         var min = values.Min();
         var max = values.Max();
         var range = max - min;
-
-        if (range == 0)
-            return values.Select(_ => 50d).ToArray();
-
-        return values
-            .Select(v => ((v - min) / range) * 100d)
-            .ToArray();
+        if (range == 0) return values.Select(_ => 50d).ToArray();
+        return values.Select(v => ((v - min) / range) * 100d).ToArray();
     }
 }
