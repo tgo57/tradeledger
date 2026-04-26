@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TradeLedger.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0047e9f79d4fb6383ce9af7dc394046a7d5514b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22aa06907dd19029c777c7574e36f3f332afad8b")]
 [assembly: System.Reflection.AssemblyProductAttribute("TradeLedger.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TradeLedger.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

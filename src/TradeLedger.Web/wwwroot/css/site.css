@@ -904,3 +904,45 @@ KPI Donut – kill legend completely
     text-align: right;
     flex-shrink: 0;
 }
+/* =========================
+   Filter bar — TraderSync style
+   Add to bottom of site.css
+   ========================= */
+
+.tl-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 8px 0;
+}
+
+.tl-filter-chip {
+    min-width: 110px;
+    max-width: 150px;
+}
+
+    /* Make the outlined selects compact and pill-ish */
+    .tl-filter-chip .mud-input-outlined .mud-input-outlined-border {
+        border-radius: 8px !important;
+    }
+
+    .tl-filter-chip .mud-input-control {
+        margin: 0 !important;
+    }
+
+/* Clear button */
+.tl-filter-clear {
+    color: #64748b !important;
+    font-size: 0.78rem !important;
+    padding: 4px 10px !important;
+    min-width: unset !important;
+    height: 36px;
+    border-radius: 8px !important;
+}
+
+    .tl-filter-clear:hover {
+        background: rgba(15,23,42,.06) !important;
+        color: #dc2626 !important;
+    }
+
