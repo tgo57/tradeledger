@@ -1,18 +1,21 @@
 ﻿@page "/dashboard"
+@implements IDisposable
 
 @using MudBlazor
 @using TradeLedger.Web.Models
 @using TradeLedger.Web.Services
 @inject TradesReadService TradesRead
 @inject DashboardService Svc
+@inject TradeLedger.Web.Services.AppStateService AppState
 
 <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">
-    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-        <MudSelect T="string" Dense="true" @bind-Value="_account" Label="Account">
-            <MudSelectItem Value="@("Schwab1")">Schwab1</MudSelectItem>
-        </MudSelect>
 
-        <MudButton Variant="Variant.Filled" OnClick="Load">Refresh</MudButton>
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-2">
+        <MudText Typo="Typo.subtitle1" Color="Color.Secondary">
+            Account: <b>@AppState.Account</b>
+        </MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="Load">Refresh</MudButton>
     </MudStack>
 
     @if (_loading)
@@ -100,8 +103,8 @@
 
                     <div class="tl-filter-bar mt-3">
 
-                        @* Date Range *@
-                        <MudSelect T="string" @bind-Value="_filterRange" Dense="true"
+                        <MudSelect T="string" Value="@_filterRange"
+                                   ValueChanged="@((string v) => { _filterRange = v; StateHasChanged(); })"
                                    Variant="Variant.Outlined" Class="tl-filter-chip"
                                    Label="Date" AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All Time</MudSelectItem>
@@ -110,10 +113,20 @@
                             <MudSelectItem Value="@("90d")">Last 90 Days</MudSelectItem>
                             <MudSelectItem Value="@("6m")">Last 6 Months</MudSelectItem>
                             <MudSelectItem Value="@("1y")">Last Year</MudSelectItem>
+                            <MudSelectItem Value="@("custom")">Custom...</MudSelectItem>
                         </MudSelect>
 
-                        @* Status *@
-                        <MudSelect T="string" @bind-Value="_filterStatus" Dense="true"
+                    @if (_filterRange == "custom")
+                        {
+                            <MudDatePicker @bind-Date="_customStart" Label="From"
+                                           Variant="Variant.Outlined" Class="tl-filter-chip"
+                                           DateFormat="yyyy-MM-dd" Editable="true" />
+                            <MudDatePicker @bind-Date="_customEnd" Label="To"
+                                           Variant="Variant.Outlined" Class="tl-filter-chip"
+                                           DateFormat="yyyy-MM-dd" Editable="true" />
+                        }
+
+                        <MudSelect T="string" @bind-Value="_filterStatus"
                                    Variant="Variant.Outlined" Class="tl-filter-chip"
                                    Label="Status" AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
@@ -122,19 +135,17 @@
                             <MudSelectItem Value="@("OPEN")">Open</MudSelectItem>
                         </MudSelect>
 
-                        @* Symbol *@
-                        <MudSelect T="string" @bind-Value="_filterSymbol" Dense="true"
+                        <MudSelect T="string" @bind-Value="_filterSymbol"
                                    Variant="Variant.Outlined" Class="tl-filter-chip"
                                    Label="Symbol" AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
-                        @foreach (var sym in _availableSymbols)
+                            @foreach (var sym in _availableSymbols)
                             {
                                 <MudSelectItem Value="@sym">@sym</MudSelectItem>
                             }
                         </MudSelect>
 
-                        @* Put/Call *@
-                        <MudSelect T="string" @bind-Value="_filterSide" Dense="true"
+                        <MudSelect T="string" @bind-Value="_filterSide"
                                    Variant="Variant.Outlined" Class="tl-filter-chip"
                                    Label="Side" AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
@@ -142,8 +153,7 @@
                             <MudSelectItem Value="@("Call")">Call</MudSelectItem>
                         </MudSelect>
 
-                        @* Return $ range *@
-                        <MudSelect T="string" @bind-Value="_filterReturn" Dense="true"
+                        <MudSelect T="string" @bind-Value="_filterReturn"
                                    Variant="Variant.Outlined" Class="tl-filter-chip"
                                    Label="Return $" AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
@@ -154,13 +164,10 @@
                             <MudSelectItem Value="@("1000+")">$1,000+</MudSelectItem>
                         </MudSelect>
 
-                        @* Clear button *@
                         @if (AnyFilterActive)
                         {
-                            <MudButton Variant="Variant.Text"
-                                       Size="Size.Small"
-                                       Class="tl-filter-clear"
-                                       OnClick="ClearFilters">
+                            <MudButton Variant="Variant.Text" Size="Size.Small"
+                                       Class="tl-filter-clear" OnClick="ClearFilters">
                                 ✕ Clear
                             </MudButton>
                         }
@@ -168,11 +175,10 @@
                     </div>
 
                     <div class="tl-table-scroll">
-                        <MudTable class="tl-trades-table" Items="FilteredTrades"
-                                  Dense="true"
-                                  Hover="true"
-                                  Striped="true"
-                                  RowClick="_rowClickCb">
+                        <MudTable T="TradeRow" Items="FilteredTrades"
+                                  Class="tl-trades-table"
+                                  Dense="true" Hover="true" Striped="true"
+                                  RowClickEvent="_rowClickCb">
 
                             <HeaderContent>
                                 <MudTh></MudTh>
@@ -195,56 +201,40 @@
                                                    Icon="@(_expanded.Contains(context.Id) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
                                                    OnClick="@(async () => await ToggleExecAsync(context.Id))" />
                                 </MudTd>
-
                                 <MudTd>@context.Id</MudTd>
                                 <MudTd>
                                     @{
                                         var s = Status(context);
                                         var chipClass = $"tl-chip tl-chip-{s.ToLowerInvariant()}";
                                     }
-                                    <MudChip T="string"
-                                             Size="Size.Small"
-                                             Variant="Variant.Filled"
-                                             Color="Color.Default"
-                                             Class="@chipClass">
-                                        @s
-                                    </MudChip>
+                                    <MudChip T="string" Size="Size.Small" Variant="Variant.Filled"
+                                             Color="Color.Default" Class="@chipClass">@s</MudChip>
                                 </MudTd>
-
                                 <MudTd Class="tl-nowrap">
                                     <MudText Typo="Typo.body2" Class="tl-date">@context.OpenDate.ToString("yyyy-MM-dd")</MudText>
                                 </MudTd>
-
                                 <MudTd Class="tl-nowrap">
                                     <MudText Typo="Typo.body2" Class="tl-date">
                                         @(context.CloseDate is null ? "—" : context.CloseDate.Value.ToString("yyyy-MM-dd"))
                                     </MudText>
                                 </MudTd>
-
                                 <MudTd Class="tl-nowrap">
-                                    <MudText Typo="Typo.body2" Class="tl-date">
-                                        @context.Expiration.ToString("yyyy-MM-dd")
-                                    </MudText>
+                                    <MudText Typo="Typo.body2" Class="tl-date">@context.Expiration.ToString("yyyy-MM-dd")</MudText>
                                 </MudTd>
-
                                 <MudTd>@context.Underlying</MudTd>
-                                <MudTd class="tl-col-putcall">@context.Right</MudTd>
-
-                                <MudTd Class="tl-col-strikes" DataLabel="Strikes">
+                                <MudTd Class="tl-col-putcall">@context.Right</MudTd>
+                                <MudTd Class="tl-col-strikes">
                                     <MudText Typo="Typo.body2" Class="tl-nowrap">
                                         <b>@context.ShortStrike.ToString("0")</b>/@context.LongStrike.ToString("0")
                                     </MudText>
                                 </MudTd>
-
-                                <MudTd class="tl-col-fees" align="Align.Right">@context.TotalFees.ToString("0.00")</MudTd>
-
-                                <MudTd align="Align.Right">
+                                <MudTd Class="tl-col-fees" Style="text-align:right">@context.TotalFees.ToString("0.00")</MudTd>
+                                <MudTd Style="text-align:right">
                                     <MudText Typo="Typo.body2" Class="@(context.ReturnGross >= 0 ? "tl-pos" : "tl-neg")">
                                         @context.ReturnGross.ToString("0.00")
                                     </MudText>
                                 </MudTd>
-
-                                <MudTd align="Align.Right">
+                                <MudTd Style="text-align:right">
                                     @if (context.NetReturnPct is { } pct)
                                     {
                                         <MudText Typo="Typo.body2" Class="@(pct >= 0 ? "tl-pos" : "tl-neg")">
@@ -261,7 +251,7 @@
                             <ChildRowContent>
                                 @if (_expanded.Contains(context.Id))
                                 {
-                                    <MudTd ColSpan="999" Class="pl-6 pr-6 pb-4 tl-childrow tl-detail-cell">
+                                    <MudTd ColSpan="12" Class="pl-6 pr-6 pb-4 tl-childrow tl-detail-cell">
                                         @if (_execLoading.Contains(context.Id))
                                         {
                                             <MudProgressLinear Indeterminate="true" />
@@ -341,7 +331,7 @@
                             <MudStack Row="true" AlignItems="AlignItems.Center">
                                 <MudText>@r.Bucket</MudText>
                                 <MudSpacer />
-                                <MudText>PF @r.ProfitFactor.ToString("0.00")</MudText>
+                                <MudText>PF @(r.ProfitFactor >= 99m ? "Max" : r.ProfitFactor.ToString("0.00"))</MudText>
                             </MudStack>
                             <MudText Typo="Typo.caption">@($"{r.Trades} trades | {r.TotalPL:0.00} P/L | {r.MinDte}-{r.MaxDte} DTE")</MudText>
                             <MudDivider Class="my-2" />
@@ -355,16 +345,25 @@
 </MudContainer>
 
 @code {
-    private string _broker = "Schwab";
-    private string _account = "Schwab1";
     private bool _loading;
     private DashboardVm? _vm;
 
+    // ── Lifecycle ─────────────────────────────────────────────────
     protected override async Task OnInitializedAsync()
     {
-        _rowClickCb = EventCallback.Factory
-            .Create<MudBlazor.TableRowClickEventArgs<TradeRow>>(this, OnTradeRowClick);
+        AppState.OnChange += OnAppStateChanged;
         await Load();
+    }
+
+    private async void OnAppStateChanged()
+    {
+        await Load();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        AppState.OnChange -= OnAppStateChanged;
     }
 
     private async Task Load()
@@ -372,19 +371,23 @@
         _loading = true;
         try
         {
-            _vm = await Svc.GetDashboard(_broker, _account, take: 200);
+            _vm = await Svc.GetDashboard(AppState.Broker, AppState.Account, take: 200);
             BuildKpiCharts();
             BuildSymbolList();
         }
-        finally
-        {
-            _loading = false;
-        }
+        finally { _loading = false; }
     }
 
-    private static string RightLetter(string r) =>
-        string.IsNullOrWhiteSpace(r) ? "?" : char.ToUpperInvariant(r.Trim()[0]).ToString();
+    // ── Row click (avoid generic in Razor markup) ─────────────────
+    private EventCallback<TableRowClickEventArgs<TradeRow>> _rowClickCb;
 
+    protected override void OnInitialized()
+    {
+        _rowClickCb = EventCallback.Factory.Create(this,
+            new Action<TableRowClickEventArgs<TradeRow>>(args => _ = OpenDetailsAsync(args.Item)));
+    }
+
+    // ── Status ────────────────────────────────────────────────────
     private static string Status(TradeRow g)
     {
         if (g.CloseDate is null) return "OPEN";
@@ -393,59 +396,35 @@
         return "FLAT";
     }
 
+    // ── Expand / executions ───────────────────────────────────────
     private readonly HashSet<long> _expanded = new();
     private readonly Dictionary<long, List<ExecutionRowDto>> _execCache = new();
     private readonly HashSet<long> _execLoading = new();
 
-    private async Task ToggleExecAsync(long tradeGroupId)
+    private async Task ToggleExecAsync(long id)
     {
-        if (_expanded.Contains(tradeGroupId))
-        {
-            _expanded.Remove(tradeGroupId);
-            return;
-        }
-        _expanded.Add(tradeGroupId);
-        if (_execCache.ContainsKey(tradeGroupId)) return;
-        _execLoading.Add(tradeGroupId);
-        try
-        {
-            _execCache[tradeGroupId] = await TradesRead.GetExecutionsForGroupAsync(tradeGroupId);
-        }
-        finally
-        {
-            _execLoading.Remove(tradeGroupId);
-        }
+        if (_expanded.Contains(id)) { _expanded.Remove(id); return; }
+        _expanded.Add(id);
+        if (_execCache.ContainsKey(id)) return;
+        _execLoading.Add(id);
+        try { _execCache[id] = await TradesRead.GetExecutionsForGroupAsync(id); }
+        finally { _execLoading.Remove(id); }
     }
 
-    private bool _detailsOpen;
     private TradeRow? _selectedTrade;
 
-    private async Task OpenDetailsAsync(TradeRow trade)
+    private async Task OpenDetailsAsync(TradeRow? trade)
     {
+        if (trade is null) return;
         _selectedTrade = trade;
-        _detailsOpen = true;
         if (_execCache.ContainsKey(trade.Id)) return;
         _execLoading.Add(trade.Id);
-        try
-        {
-            _execCache[trade.Id] = await TradesRead.GetExecutionsForGroupAsync(trade.Id);
-        }
-        finally
-        {
-            _execLoading.Remove(trade.Id);
-        }
+        try { _execCache[trade.Id] = await TradesRead.GetExecutionsForGroupAsync(trade.Id); }
+        finally { _execLoading.Remove(trade.Id); }
     }
 
-    private void CloseDetails() => _detailsOpen = false;
-
-    private async Task OnTradeRowClick(TableRowClickEventArgs<TradeRow> args) =>
-        await OpenDetailsAsync(args.Item);
-
-    private EventCallback<TableRowClickEventArgs<TradeRow>> _rowClickCb;
-
-    // ── Sparkline backing fields (used by BuildKpiCharts) ──
+    // ── Sparkline backing fields ──────────────────────────────────
     private double[] _sparkPf = Array.Empty<double>();
-    private string[] _sparkPfLabels = Array.Empty<string>();
     private double[] _donutWinLoss = Array.Empty<double>();
 
     private void BuildKpiCharts()
@@ -453,25 +432,16 @@
         if (_vm is null || _vm.Trades is null || _vm.Trades.Count == 0)
         {
             _sparkPf = Array.Empty<double>();
-            _sparkPfLabels = Array.Empty<string>();
             _donutWinLoss = new double[] { 0, 0 };
             return;
         }
-
         var ordered = _vm.Trades.OrderBy(t => t.OpenDate).ToList();
         var closed = ordered.Where(t => t.CloseDate is not null).ToList();
-
-        // Donut
         var wins = closed.Count(t => t.NetPL > 0m);
         var losses = closed.Count(t => t.NetPL < 0m);
         _donutWinLoss = new double[] { Math.Max(wins, 0.001), Math.Max(losses, 0.001) };
-
-        // PF sparkline (kept for reference, KPIs now use FilteredSparkPf)
         var pfAll = CumulativeProfitFactor(ordered).ToArray();
-        var pfLabelsAll = closed.Select(t => t.CloseDate!.Value.ToString("yyyy-MM-dd")).ToArray();
-        var pfSkip = Math.Max(0, pfAll.Length - 30);
-        _sparkPf = pfAll.Skip(pfSkip).ToArray();
-        _sparkPfLabels = pfLabelsAll.Skip(pfSkip).ToArray();
+        _sparkPf = pfAll.TakeLast(30).ToArray();
     }
 
     static IEnumerable<double> CumulativeProfitFactor(List<TradeRow> ordered)
@@ -482,8 +452,7 @@
         foreach (var t in closed)
         {
             var pl = (double)t.NetPL;
-            if (pl > 0) gains += pl;
-            else if (pl < 0) losses += -pl;
+            if (pl > 0) gains += pl; else if (pl < 0) losses += -pl;
             var pf = losses <= 0.000001 ? (gains > 0 ? 99 : 0) : gains / losses;
             yield return Math.Min(pf, 10);
         }
@@ -503,55 +472,44 @@
 
     private int WinRateTrend()
     {
-        if (_vm?.Trades is null) return 0;
         var closed = FilteredTrades.Where(t => t.CloseDate is not null).OrderBy(t => t.CloseDate).ToList();
         if (closed.Count < 6) return 0;
         var last5 = closed.TakeLast(5).ToList();
         var prev5 = closed.Skip(Math.Max(0, closed.Count - 10)).Take(5).ToList();
-        decimal WinRate(List<TradeRow> xs)
-        {
-            var w = xs.Count(t => t.NetPL > 0m);
-            var n = w + xs.Count(t => t.NetPL < 0m);
-            return n == 0 ? 0m : (decimal)w / n;
-        }
-        var r1 = WinRate(prev5);
-        var r2 = WinRate(last5);
+        decimal WR(List<TradeRow> xs) { var w = xs.Count(t => t.NetPL > 0m); var n = w + xs.Count(t => t.NetPL < 0m); return n == 0 ? 0m : (decimal)w / n; }
+        var r1 = WR(prev5); var r2 = WR(last5);
         return r2 > r1 ? 1 : r2 < r1 ? -1 : 0;
     }
 
-    // ── Filter state ──────────────────────────────
+    // ── Filters ───────────────────────────────────────────────────
     private string _filterRange = "all";
     private string _filterStatus = "all";
     private string _filterSymbol = "all";
     private string _filterSide = "all";
     private string _filterReturn = "all";
-
+    private DateTime? _customStart;
+    private DateTime? _customEnd;
     private List<string> _availableSymbols = new();
 
     private bool AnyFilterActive =>
         _filterRange != "all" || _filterStatus != "all" ||
-        _filterSymbol != "all" || _filterSide != "all" ||
-        _filterReturn != "all";
+        _filterSymbol != "all" || _filterSide != "all" || _filterReturn != "all";
 
     private void ClearFilters()
     {
-        _filterRange = "all";
-        _filterStatus = "all";
-        _filterSymbol = "all";
-        _filterSide = "all";
-        _filterReturn = "all";
+        _filterRange = "all"; _filterStatus = "all";
+        _filterSymbol = "all"; _filterSide = "all"; _filterReturn = "all";
+        _customStart = null; _customEnd = null;
     }
 
     private void BuildSymbolList()
     {
         if (_vm?.Trades is null) return;
         _availableSymbols = _vm.Trades
-            .Select(t => t.Underlying)
-            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Select(t => t.Underlying).Where(s => !string.IsNullOrWhiteSpace(s))
             .Distinct().OrderBy(s => s).ToList();
     }
 
-    // ── Filtered trades ───────────────────────────
     private List<TradeRow> FilteredTrades
     {
         get
@@ -566,14 +524,14 @@
                 "90d" => q.Where(t => t.OpenDate >= now.AddDays(-90)),
                 "6m" => q.Where(t => t.OpenDate >= now.AddMonths(-6)),
                 "1y" => q.Where(t => t.OpenDate >= now.AddYears(-1)),
+                "custom" => q.Where(t =>
+                    (_customStart == null || t.OpenDate >= _customStart.Value) &&
+                    (_customEnd == null || t.OpenDate <= _customEnd.Value)),
                 _ => q
             };
-            if (_filterStatus != "all")
-                q = q.Where(t => Status(t) == _filterStatus);
-            if (_filterSymbol != "all")
-                q = q.Where(t => t.Underlying == _filterSymbol);
-            if (_filterSide != "all")
-                q = q.Where(t => t.Right?.Trim().Equals(_filterSide, StringComparison.OrdinalIgnoreCase) == true);
+            if (_filterStatus != "all") q = q.Where(t => Status(t) == _filterStatus);
+            if (_filterSymbol != "all") q = q.Where(t => t.Underlying == _filterSymbol);
+            if (_filterSide != "all") q = q.Where(t => t.Right?.Trim().Equals(_filterSide, StringComparison.OrdinalIgnoreCase) == true);
             q = _filterReturn switch
             {
                 "pos" => q.Where(t => t.ReturnGross > 0),
@@ -587,7 +545,7 @@
         }
     }
 
-    // ── Filtered KPIs (all derived from FilteredTrades) ──
+    // ── Filtered KPIs ─────────────────────────────────────────────
     private decimal FilteredGrossReturn => FilteredTrades.Sum(t => t.ReturnGross);
     private decimal FilteredNetPL => FilteredTrades.Sum(t => t.NetPL);
     private decimal FilteredAvgPL => FilteredTrades.Count == 0 ? 0 : FilteredTrades.Average(t => t.NetPL);
@@ -639,19 +597,18 @@
             var closed = FilteredTrades.Where(t => t.CloseDate != null).ToList();
             var wins = closed.Count(t => t.NetPL > 0);
             var losses = closed.Count(t => t.NetPL < 0);
-            return new double[] { Math.Max(wins, 0.001), Math.Max(losses, 0.001) };
+            var total = Math.Max(wins + losses, 1);
+            var min = total * 0.02;
+            return new double[] { Math.Max(wins, min), Math.Max(losses, min) };
         }
     }
 
     private double[] FilteredSparkGross =>
-        Cumulative(FilteredTrades.OrderBy(t => t.OpenDate)
-            .Select(t => (double)t.ReturnGross)).TakeLast(30).ToArray();
+        Cumulative(FilteredTrades.OrderBy(t => t.OpenDate).Select(t => (double)t.ReturnGross)).TakeLast(30).ToArray();
 
     private double[] FilteredSparkNetPl =>
-        Cumulative(FilteredTrades.OrderBy(t => t.OpenDate)
-            .Select(t => (double)t.NetPL)).TakeLast(30).ToArray();
+        Cumulative(FilteredTrades.OrderBy(t => t.OpenDate).Select(t => (double)t.NetPL)).TakeLast(30).ToArray();
 
     private double[] FilteredSparkPf =>
-        CumulativeProfitFactor(FilteredTrades.OrderBy(t => t.OpenDate).ToList())
-            .TakeLast(30).ToArray();
+        CumulativeProfitFactor(FilteredTrades.OrderBy(t => t.OpenDate).ToList()).TakeLast(30).ToArray();
 }

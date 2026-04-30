@@ -19,6 +19,12 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 
 builder.Services.AddScoped<TradesReadService>();
 builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<SchwabCsvImportService>();
+builder.Services.AddScoped<TastyTradeImporter>();
+builder.Services.AddSingleton<ImportHistoryService>();
+builder.Services.AddSingleton<AppStateService>();
+builder.Services.AddScoped<ClearAccountService>();
+
 
 var app = builder.Build();
 

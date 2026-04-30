@@ -1,0 +1,402 @@
+@page "/import"
+
+@using MudBlazor
+@using TradeLedger.Web.Services
+@inject SchwabCsvImportService SchwabImport
+@inject TastyTradeImporter TastyImport
+@inject ClearAccountService ClearAccount
+@inject ImportHistoryService ImportHistory
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudText Typo="Typo.h5" Class="mb-4">Import Trades</MudText>
+
+    <MudGrid>
+
+        @* ── Schwab Card ─────────────────────────────────────────── *@
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="1" Style="height:100%;">
+                <MudStack Spacing="3">
+
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Color="Color.Primary" />
+                        <MudText Typo="Typo.h6">Charles Schwab</MudText>
+                    </MudStack>
+
+                    <MudDivider />
+
+                    <MudSelect T="string" @bind-Value="_schwabAccount" Label="Account" Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("Schwab1")">Schwab1</MudSelectItem>
+                        <MudSelectItem Value="@("Schwab2")">Schwab2</MudSelectItem>
+                    </MudSelect>
+
+                    <MudText Typo="Typo.subtitle2">Upload CSV Export</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Download from Schwab: Accounts → History → Export
+                    </MudText>
+
+                    <InputFile id="schwabFile" OnChange="OnSchwabFileSelected" accept=".csv" style="display:none;" />
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Outlined"
+                               StartIcon="@Icons.Material.Filled.UploadFile"
+                               for="schwabFile"
+                               FullWidth="true">
+                        @(_schwabFileName ?? "Choose CSV File")
+                    </MudButton>
+
+                    @if (_schwabFile != null)
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                   OnClick="ImportSchwab"
+                                   Disabled="_schwabImporting"
+                                   FullWidth="true">
+                            @if (_schwabImporting)
+                            {
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                <span>Importing...</span>
+                            }
+                            else
+                            {
+                                <span>Import Schwab CSV</span>
+                            }
+                        </MudButton>
+                    }
+
+                    <MudDivider />
+                    <MudText Typo="Typo.subtitle2">Auto-Sync (OAuth)</MudText>
+                    <MudAlert Severity="Severity.Info">
+                        Schwab API approval pending. Once approved, you'll be able to sync automatically without downloading a CSV.
+                    </MudAlert>
+                    <MudButton Variant="Variant.Outlined" Disabled="true"
+                               StartIcon="@Icons.Material.Filled.Sync" FullWidth="true">
+                        Connect Schwab Account (Pending Approval)
+                    </MudButton>
+
+                    @if (_schwabResult != null)
+                    {
+                        <MudAlert Severity="@(_schwabResult.Errors.Any() ? Severity.Warning : Severity.Success)">
+                            ✅ @_schwabResult.Inserted inserted &nbsp;|&nbsp; ⏭ @_schwabResult.Skipped skipped
+                            @if (_schwabResult.Errors.Any())
+                            {
+                                <br />
+                                @foreach (var e in _schwabResult.Errors.Take(5))
+                                {
+                                    <div>⚠ @e</div>
+                                }
+                            }
+                        </MudAlert>
+                    }
+
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+        @* ── TastyTrade Card ─────────────────────────────────────── *@
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Elevation="1" Style="height:100%;">
+                <MudStack Spacing="3">
+
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Filled.ShowChart" Color="Color.Secondary" />
+                        <MudText Typo="Typo.h6">tastytrade</MudText>
+                    </MudStack>
+
+                    <MudDivider />
+
+                    <MudSelect T="string" @bind-Value="_tastyAccount" Label="Account" Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("Tasty1")">Tasty1 (Individual)</MudSelectItem>
+                        <MudSelectItem Value="@("Tasty2")">Tasty2</MudSelectItem>
+                    </MudSelect>
+
+                    <MudText Typo="Typo.subtitle2">Upload Transaction History CSV</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Download from tastytrade: History → Transaction History → Export CSV
+                    </MudText>
+
+                    <InputFile id="tastyFile" OnChange="OnTastyFileSelected" accept=".csv" style="display:none;" />
+                    <MudButton HtmlTag="label"
+                               Variant="Variant.Outlined"
+                               StartIcon="@Icons.Material.Filled.UploadFile"
+                               for="tastyFile"
+                               FullWidth="true">
+                        @(_tastyFileName ?? "Choose CSV File")
+                    </MudButton>
+
+                    @if (_tastyFile != null)
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Secondary"
+                                   StartIcon="@Icons.Material.Filled.CloudUpload"
+                                   OnClick="ImportTasty"
+                                   Disabled="_tastyImporting"
+                                   FullWidth="true">
+                            @if (_tastyImporting)
+                            {
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                <span>Importing...</span>
+                            }
+                            else
+                            {
+                                <span>Import tastytrade CSV</span>
+                            }
+                        </MudButton>
+                    }
+
+                    @if (_tastyResult != null)
+                    {
+                        <MudAlert Severity="@(_tastyResult.Errors.Any() ? Severity.Warning : Severity.Success)">
+                            ✅ @_tastyResult.Inserted inserted &nbsp;|&nbsp; ⏭ @_tastyResult.Skipped skipped
+                            @if (_tastyResult.Errors.Any())
+                            {
+                                <br />
+                                @foreach (var e in _tastyResult.Errors.Take(5))
+                                {
+                                    <div>⚠ @e</div>
+                                }
+                            }
+                        </MudAlert>
+                    }
+
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+
+    @* ── Clear Account Data ───────────────────────────────────────── *@
+    <MudPaper Class="pa-4 mt-4" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.DeleteSweep" Color="Color.Error" />
+            <MudText Typo="Typo.h6">Clear Account Data</MudText>
+        </MudStack>
+        <MudDivider Class="mb-3" />
+        <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-3">
+            Permanently deletes all trade groups and executions for the selected account.
+            Use this before re-importing to fix data issues.
+        </MudText>
+
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudSelect T="string" @bind-Value="_clearBroker" Label="Broker" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("Schwab")">Schwab</MudSelectItem>
+                    <MudSelectItem Value="@("TastyTrade")">tastytrade</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudSelect T="string" @bind-Value="_clearAccount" Label="Account" Variant="Variant.Outlined">
+                    @if (_clearBroker == "Schwab")
+                    {
+                        <MudSelectItem Value="@("Schwab1")">Schwab1</MudSelectItem>
+                        <MudSelectItem Value="@("Schwab2")">Schwab2</MudSelectItem>
+                    }
+                    else
+                    {
+                        <MudSelectItem Value="@("Tasty1")">Tasty1 (Individual)</MudSelectItem>
+                        <MudSelectItem Value="@("Tasty2")">Tasty2</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="4" Class="d-flex align-center">
+                @if (!_confirmClear)
+                {
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Error"
+                               StartIcon="@Icons.Material.Filled.DeleteForever"
+                               OnClick="@(() => _confirmClear = true)"
+                               FullWidth="true">
+                        Clear @_clearAccount
+                    </MudButton>
+                }
+                else
+                {
+                    <MudStack Row="true" Spacing="1" Style="width:100%">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Error"
+                                   OnClick="DoClear"
+                                   Disabled="_clearing"
+                                   FullWidth="true">
+                            @if (_clearing)
+                            {
+                                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                                <span>Clearing...</span>
+                            }
+                            else
+                            {
+                                <span>Yes, Delete All</span>
+                            }
+                        </MudButton>
+                        <MudButton Variant="Variant.Outlined"
+                                   OnClick="@(() => _confirmClear = false)"
+                                   FullWidth="true">
+                            Cancel
+                        </MudButton>
+                    </MudStack>
+                }
+            </MudItem>
+        </MudGrid>
+
+        @if (_clearResult != null)
+        {
+            <MudAlert Severity="Severity.Success" Class="mt-3">
+                Cleared @_clearResult.GroupsDeleted trade groups and @_clearResult.ExecutionsDeleted executions from @_clearAccount.
+            </MudAlert>
+        }
+    </MudPaper>
+
+    @* ── Import History ───────────────────────────────────────────── *@
+    <MudPaper Class="pa-4 mt-4" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-3">
+            <MudText Typo="Typo.h6">Import History</MudText>
+            <MudSpacer />
+            @if (ImportHistory.History.Any())
+            {
+                <MudButton Size="Size.Small" Variant="Variant.Text"
+                           OnClick="@(() => { ImportHistory.Clear(); StateHasChanged(); })">
+                    Clear
+                </MudButton>
+            }
+        </MudStack>
+        <MudDivider Class="mb-3" />
+
+        @if (!ImportHistory.History.Any())
+        {
+            <MudText Color="Color.Secondary">No imports yet.</MudText>
+        }
+        else
+        {
+            <MudTable Items="ImportHistory.History" Dense="true" Hover="true">
+                <HeaderContent>
+                    <MudTh>Time</MudTh>
+                    <MudTh>Broker</MudTh>
+                    <MudTh>Account</MudTh>
+                    <MudTh>File</MudTh>
+                    <MudTh>Inserted</MudTh>
+                    <MudTh>Skipped</MudTh>
+                    <MudTh>Status</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Time.ToString("yyyy-MM-dd HH:mm:ss")</MudTd>
+                    <MudTd>@context.Broker</MudTd>
+                    <MudTd>@context.Account</MudTd>
+                    <MudTd Class="tl-ellipsis" Style="max-width:200px;">@context.FileName</MudTd>
+                    <MudTd>@context.Inserted</MudTd>
+                    <MudTd>@context.Skipped</MudTd>
+                    <MudTd>
+                        @if (context.Errors.Any())
+                        {
+                            <MudChip T="string" Color="Color.Warning" Size="Size.Small">
+                                @context.Errors.Count warning(s)
+                            </MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Color="Color.Success" Size="Size.Small">OK</MudChip>
+                        }
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </MudPaper>
+
+</MudContainer>
+
+@code {
+    // ── Schwab ────────────────────────────────────────────────────
+    private string _schwabAccount = "Schwab1";
+    private IBrowserFile? _schwabFile;
+    private string? _schwabFileName;
+    private bool _schwabImporting;
+    private SchwabCsvImportService.ImportResult? _schwabResult;
+
+    // ── TastyTrade ────────────────────────────────────────────────
+    private string _tastyAccount = "Tasty1";
+    private IBrowserFile? _tastyFile;
+    private string? _tastyFileName;
+    private bool _tastyImporting;
+    private TastyTradeImporter.ImportResult? _tastyResult;
+
+    // ── Clear ─────────────────────────────────────────────────────
+    private string _clearBroker = "TastyTrade";
+    private string _clearAccount = "Tasty1";
+    private bool _confirmClear;
+    private bool _clearing;
+    private ClearAccountService.ClearResult? _clearResult;
+
+    // ── Schwab handlers ───────────────────────────────────────────
+    private void OnSchwabFileSelected(InputFileChangeEventArgs e)
+    {
+        _schwabFile = e.File;
+        _schwabFileName = e.File.Name;
+        _schwabResult = null;
+    }
+
+    private async Task ImportSchwab()
+    {
+        if (_schwabFile == null) return;
+        _schwabImporting = true;
+        _schwabResult = null;
+        try
+        {
+            await using var stream = _schwabFile.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024);
+            _schwabResult = await SchwabImport.ImportAsync(stream, "Schwab", _schwabAccount, _schwabFileName ?? "upload.csv");
+            ImportHistory.Add(new ImportHistoryService.HistoryEntry(
+                DateTime.Now, "Schwab", _schwabAccount, _schwabFileName ?? "",
+                _schwabResult.Inserted, _schwabResult.Skipped, _schwabResult.Errors));
+            Snackbar.Add($"Schwab: {_schwabResult.Inserted} trades imported", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Import failed: {ex.Message}", Severity.Error);
+        }
+        finally { _schwabImporting = false; }
+    }
+
+    // ── TastyTrade handlers ───────────────────────────────────────
+    private void OnTastyFileSelected(InputFileChangeEventArgs e)
+    {
+        _tastyFile = e.File;
+        _tastyFileName = e.File.Name;
+        _tastyResult = null;
+    }
+
+    private async Task ImportTasty()
+    {
+        if (_tastyFile == null) return;
+        _tastyImporting = true;
+        _tastyResult = null;
+        try
+        {
+            await using var stream = _tastyFile.OpenReadStream(maxAllowedSize: 50 * 1024 * 1024);
+            _tastyResult = await TastyImport.ImportAsync(stream, _tastyAccount);
+            ImportHistory.Add(new ImportHistoryService.HistoryEntry(
+                DateTime.Now, "tastytrade", _tastyAccount, _tastyFileName ?? "",
+                _tastyResult.Inserted, _tastyResult.Skipped, _tastyResult.Errors));
+            Snackbar.Add($"tastytrade: {_tastyResult.Inserted} trades imported", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Import failed: {ex.Message}", Severity.Error);
+        }
+        finally { _tastyImporting = false; }
+    }
+
+    // ── Clear handler ─────────────────────────────────────────────
+    private async Task DoClear()
+    {
+        _clearing = true;
+        _clearResult = null;
+        try
+        {
+            _clearResult = await ClearAccount.ClearAsync(_clearBroker, _clearAccount);
+            _confirmClear = false;
+            Snackbar.Add($"Cleared {_clearResult.GroupsDeleted} trades from {_clearAccount}", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Clear failed: {ex.Message}", Severity.Error);
+        }
+        finally { _clearing = false; }
+    }
+}

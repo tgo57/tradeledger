@@ -1,73 +1,61 @@
 ﻿@inherits LayoutComponentBase
+@inject TradeLedger.Web.Services.AppStateService AppState
 
 <MudThemeProvider Theme="_theme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
-
 <MudLayout>
-
     <MudAppBar Dense="true" Elevation="0" Class="tl-appbar">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Edge="Edge.Start" OnClick="@ToggleDrawer" />
         <MudText Typo="Typo.h6" Class="ml-2">TradeLedger</MudText>
-
         <MudSpacer />
 
-        <MudSelect T="string" Dense="true" Variant="Variant.Outlined" Margin="Margin.Dense"
-                   Class="tl-filter" Label="Account" @bind-Value="_account">
-            <MudSelectItem Value="@("All")">All Accounts</MudSelectItem>
+        <MudSelect T="string" Variant="Variant.Outlined" Margin="Margin.Dense"
+                   Class="tl-filter" Label="Account"
+                   Value="@AppState.Account"
+                   ValueChanged="@((string v) => AppState.Account = v)">
             <MudSelectItem Value="@("Schwab1")">Schwab1</MudSelectItem>
             <MudSelectItem Value="@("Tasty1")">Tasty1</MudSelectItem>
         </MudSelect>
 
-        <MudSelect T="string" Dense="true" Variant="Variant.Outlined" Margin="Margin.Dense"
-                   Class="tl-filter" Label="Range" @bind-Value="_range">
+        <MudSelect T="string" Variant="Variant.Outlined" Margin="Margin.Dense"
+                   Class="tl-filter" Label="Range"
+                   Value="@AppState.Range"
+                   ValueChanged="@((string v) => AppState.Range = v)">
             <MudSelectItem Value="@("30d")">Last 30D</MudSelectItem>
             <MudSelectItem Value="@("90d")">Last 90D</MudSelectItem>
             <MudSelectItem Value="@("YTD")">YTD</MudSelectItem>
             <MudSelectItem Value="@("All")">All</MudSelectItem>
         </MudSelect>
 
-        <!-- 🔍 Search box -->
-        <MudTextField Dense="true" Variant="Variant.Outlined" Margin="Margin.Dense"
+        <MudTextField Variant="Variant.Outlined" Margin="Margin.Dense"
                       Class="tl-search"
                       Placeholder="Search symbol / strike / note..."
                       Adornment="Adornment.Start"
                       AdornmentIcon="@Icons.Material.Filled.Search"
-                      @bind-Value="_search" />
+                      Value="@AppState.Search"
+                      ValueChanged="@((string v) => AppState.Search = v)" />
 
-        <!-- 🔔 / 👤 icons -->
         <MudIconButton Icon="@Icons.Material.Filled.NotificationsNone" />
         <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" />
     </MudAppBar>
-
 
     <MudDrawer @bind-Open="_drawerOpen"
                Variant="DrawerVariant.Responsive"
                MiniVariant="true"
                MiniVariantWidth="56px"
                Width="220px">
-               
-
         <NavMenu DrawerOpen="_drawerOpen" />
-
     </MudDrawer>
-
 
     <MudMainContent Class="tl-content">
         @Body
     </MudMainContent>
-
 </MudLayout>
 
 @code {
     private bool _drawerOpen = true;
-
-    // these will later be wired to a FilterState service
-    private string _account = "All";
-    private string _range = "All";
-    private string _search = "";
-
     private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
 
     private readonly MudTheme _theme = new()

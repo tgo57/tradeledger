@@ -33,9 +33,9 @@ public sealed class TastytradeCsvImporter
         var iSymbol = Find("Symbol", "Instrument", "Underlying", "Description");
         var iAction = Find("Action", "Side", "Buy/Sell", "Transaction Type");
         var iQty = Find("Quantity", "Qty", "Size");
-        var iPrice = Find("Price", "Fill Price");
+        var iPrice = Find("Price", "Fill Price", "Average Price");
         var iFees = Find("Fees", "Commission", "Commissions", "Fees & Commissions");
-        var iNet = Find("Net Amount", "Net", "Amount", "Value", "Proceeds");
+        var iNet = Find("Net Amount", "Net", "Amount", "Value", "Proceeds", "Total");
 
         if (iSymbol < 0) summary.Warnings.Add("Missing Symbol/Instrument column (cannot import).");
         if (iAction < 0) summary.Warnings.Add("Missing Action/Side column.");

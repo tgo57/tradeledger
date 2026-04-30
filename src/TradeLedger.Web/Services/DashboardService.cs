@@ -56,11 +56,14 @@ public sealed class DashboardService
             }
         ).ToListAsync();
 
-        static bool IsOpen(string action) => action.Contains("to open", StringComparison.OrdinalIgnoreCase);
+        static bool IsOpen(string action) =>
+            action.Contains("to open", StringComparison.OrdinalIgnoreCase) ||
+            action.Contains("_TO_OPEN", StringComparison.OrdinalIgnoreCase);
 
         static bool IsClose(string action) =>
-                action.Contains("to close", StringComparison.OrdinalIgnoreCase)
-            || action.Contains("expired", StringComparison.OrdinalIgnoreCase);
+            action.Contains("to close", StringComparison.OrdinalIgnoreCase) ||
+            action.Contains("_TO_CLOSE", StringComparison.OrdinalIgnoreCase) ||
+            action.Contains("expired", StringComparison.OrdinalIgnoreCase);
 
         static bool IsSell(string action) => action.TrimStart().StartsWith("sell", StringComparison.OrdinalIgnoreCase);
         static bool IsBuy(string action) => action.TrimStart().StartsWith("buy", StringComparison.OrdinalIgnoreCase);
@@ -98,13 +101,23 @@ public sealed class DashboardService
             // Gross BEFORE fees (TraderSync "Return $") reconstructed from price & qty
             // SELL => +, BUY => -
             decimal grossBeforeFees = 0m;
-            foreach (var x in ex)
+            if (broker.Equals("TastyTrade", StringComparison.OrdinalIgnoreCase))
             {
-                var qty = Math.Abs(x.Quantity.GetValueOrDefault());  // ✅ handles decimal?
-                var price = x.Price.GetValueOrDefault();               // ✅ handles decimal?
-                var leg = qty * price * 100m;
-
-                grossBeforeFees += IsSell(x.Action) ? leg : -leg;
+                // TastyTrade: Total column already has correct signed dollar amounts
+                // Sum of open legs = gross credit/debit before close
+                var openLegs = ex.Where(x => IsOpen(x.Action)).ToList();
+                grossBeforeFees = openLegs.Sum(x => x.NetAmount);
+            }
+            else
+            {
+                // Schwab: reconstruct from price × qty × 100
+                foreach (var x in ex)
+                {
+                    var qty = Math.Abs(x.Quantity.GetValueOrDefault());
+                    var price = x.Price.GetValueOrDefault();
+                    var leg = qty * price * 100m;
+                    grossBeforeFees += IsSell(x.Action) ? leg : -leg;
+                }
             }
             tr.ReturnGross = grossBeforeFees;
 
@@ -127,13 +140,19 @@ public sealed class DashboardService
             // Entry credit BEFORE fees must also be reconstructed from price/qty
             // (This matches TraderSync and avoids mixing Amount-with-fees)
             decimal entryCreditBeforeFees = 0m;
-            foreach (var x in open)
+            if (broker.Equals("TastyTrade", StringComparison.OrdinalIgnoreCase))
             {
-                var qty = Math.Abs(x.Quantity.GetValueOrDefault());
-                var price = x.Price.GetValueOrDefault();
-                var leg = qty * price * 100m;
-
-                entryCreditBeforeFees += IsSell(x.Action) ? leg : -leg;
+                entryCreditBeforeFees = open.Sum(x => x.NetAmount);
+            }
+            else
+            {
+                foreach (var x in open)
+                {
+                    var qty = Math.Abs(x.Quantity.GetValueOrDefault());
+                    var price = x.Price.GetValueOrDefault();
+                    var leg = qty * price * 100m;
+                    entryCreditBeforeFees += IsSell(x.Action) ? leg : -leg;
+                }
             }
 
             if (entryCreditBeforeFees <= 0m)
@@ -160,7 +179,7 @@ public sealed class DashboardService
 
         var grossWin = closed.Where(x => x.NetPL > 0m).Sum(x => x.NetPL);
         var grossLoss = closed.Where(x => x.NetPL < 0m).Sum(x => -x.NetPL);
-        var profitFactor = grossLoss == 0m ? 0m : grossWin / grossLoss;
+        var profitFactor = grossLoss == 0m ? (grossWin > 0m ? 99m : 0m) : grossWin / grossLoss;
 
         var avgPL = trades == 0 ? 0m : totalPL / trades;
 
@@ -207,7 +226,7 @@ public sealed class DashboardService
             {
                 var gw = g.Where(x => x.NetPL > 0m).Sum(x => x.NetPL);
                 var gl = g.Where(x => x.NetPL < 0m).Sum(x => -x.NetPL);
-                var pf = gl == 0m ? 0m : gw / gl;
+                var pf = gl == 0m ? (gw > 0m ? 99m : 0m) : gw / gl;
 
                 return new DteBucketRow(
                     Bucket: g.Key,

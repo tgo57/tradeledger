@@ -945,4 +945,39 @@ KPI Donut – kill legend completely
         background: rgba(15,23,42,.06) !important;
         color: #dc2626 !important;
     }
+/* =========================
+   Filter bar polish fixes
+   ========================= */
 
+/* Keep Clear button inline with filters */
+.tl-filter-bar {
+    flex-wrap: wrap;
+    align-items: center;
+    row-gap: 8px;
+}
+
+/* Widen Date chip so "Custom..." doesn't truncate */
+.tl-filter-chip:first-child {
+    min-width: 130px;
+    max-width: 160px;
+}
+
+/* Custom date pickers inline sizing */
+.tl-filter-chip.mud-picker {
+    min-width: 130px;
+    max-width: 150px;
+}
+
+/* Keep Clear button on same row, never wraps alone */
+.tl-filter-clear {
+    flex-shrink: 0;
+    align-self: center;
+}
+
+/* Ensure last column never clips */
+.tl-trades-table th:last-child,
+.tl-trades-table td:last-child {
+    min-width: 110px;
+    overflow: visible !important;
+    text-overflow: unset !important;
+}

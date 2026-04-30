@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TradeLedger.Importers")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+22aa06907dd19029c777c7574e36f3f332afad8b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+52a042b7facb5a462c3816a930e6a9c5ec4d3315")]
 [assembly: System.Reflection.AssemblyProductAttribute("TradeLedger.Importers")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TradeLedger.Importers")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
