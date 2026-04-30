@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TradeLedger.Cli")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+52a042b7facb5a462c3816a930e6a9c5ec4d3315")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e6508ade28e590d38d7face3d1970a032d2cd060")]
 [assembly: System.Reflection.AssemblyProductAttribute("TradeLedger.Cli")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TradeLedger.Cli")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
