@@ -99,14 +99,15 @@
         <MudGrid Class="mt-3">
             <MudItem xs="12" md="9">
                 <MudPaper Class="pa-3">
-                    <MudText Typo="Typo.h6">Trades</MudText>
+                    <MudText Typo="Typo.subtitle1" Style="font-weight:700;">Trades</MudText>
 
-                    <div class="tl-filter-bar mt-3">
+                    <div class="tl-filter-bar mt-2">
 
                         <MudSelect T="string" Value="@_filterRange"
                                    ValueChanged="@((string v) => { _filterRange = v; StateHasChanged(); })"
-                                   Variant="Variant.Outlined" Class="tl-filter-chip"
-                                   Label="Date" AnchorOrigin="Origin.BottomLeft">
+                                   Variant="Variant.Outlined" 
+                                   Class="tl-filter-chip" Label="Date"
+                                   AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All Time</MudSelectItem>
                             <MudSelectItem Value="@("ytd")">YTD</MudSelectItem>
                             <MudSelectItem Value="@("30d")">Last 30 Days</MudSelectItem>
@@ -118,17 +119,25 @@
 
                     @if (_filterRange == "custom")
                         {
-                            <MudDatePicker @bind-Date="_customStart" Label="From"
-                                           Variant="Variant.Outlined" Class="tl-filter-chip"
-                                           DateFormat="yyyy-MM-dd" Editable="true" />
-                            <MudDatePicker @bind-Date="_customEnd" Label="To"
-                                           Variant="Variant.Outlined" Class="tl-filter-chip"
-                                           DateFormat="yyyy-MM-dd" Editable="true" />
+                            <MudDatePicker @bind-Date="_customStart"
+                                           Placeholder="From"
+                                           Variant="Variant.Outlined"
+                                           Class="tl-filter-chip"
+                                           DateFormat="yyyy-MM-dd"
+                                           Editable="true" />
+
+                            <MudDatePicker @bind-Date="_customEnd"
+                                           Placeholder="To"
+                                           Variant="Variant.Outlined"
+                                           Class="tl-filter-chip"
+                                           DateFormat="yyyy-MM-dd"
+                                           Editable="true" />
                         }
 
                         <MudSelect T="string" @bind-Value="_filterStatus"
-                                   Variant="Variant.Outlined" Class="tl-filter-chip"
-                                   Label="Status" AnchorOrigin="Origin.BottomLeft">
+                                   Variant="Variant.Outlined" 
+                                   Class="tl-filter-chip" Label="Status"
+                                   AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
                             <MudSelectItem Value="@("WIN")">Win</MudSelectItem>
                             <MudSelectItem Value="@("LOSS")">Loss</MudSelectItem>
@@ -136,8 +145,9 @@
                         </MudSelect>
 
                         <MudSelect T="string" @bind-Value="_filterSymbol"
-                                   Variant="Variant.Outlined" Class="tl-filter-chip"
-                                   Label="Symbol" AnchorOrigin="Origin.BottomLeft">
+                                   Variant="Variant.Outlined" 
+                                   Class="tl-filter-chip" Label="Symbol"
+                                   AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
                             @foreach (var sym in _availableSymbols)
                             {
@@ -146,16 +156,18 @@
                         </MudSelect>
 
                         <MudSelect T="string" @bind-Value="_filterSide"
-                                   Variant="Variant.Outlined" Class="tl-filter-chip"
-                                   Label="Side" AnchorOrigin="Origin.BottomLeft">
+                                   Variant="Variant.Outlined" 
+                                   Class="tl-filter-chip" Label="Side"
+                                   AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
                             <MudSelectItem Value="@("Put")">Put</MudSelectItem>
                             <MudSelectItem Value="@("Call")">Call</MudSelectItem>
                         </MudSelect>
 
                         <MudSelect T="string" @bind-Value="_filterReturn"
-                                   Variant="Variant.Outlined" Class="tl-filter-chip"
-                                   Label="Return $" AnchorOrigin="Origin.BottomLeft">
+                                   Variant="Variant.Outlined" 
+                                   Class="tl-filter-chip" Label="Return $"
+                                   AnchorOrigin="Origin.BottomLeft">
                             <MudSelectItem Value="@("all")">All</MudSelectItem>
                             <MudSelectItem Value="@("pos")">Positive</MudSelectItem>
                             <MudSelectItem Value="@("neg")">Negative</MudSelectItem>
@@ -182,7 +194,6 @@
 
                             <HeaderContent>
                                 <MudTh></MudTh>
-                                <MudTh><MudTableSortLabel SortBy="new Func<TradeRow, object>(x => x.Id)">Id</MudTableSortLabel></MudTh>
                                 <MudTh><MudTableSortLabel SortBy="new Func<TradeRow, object>(x => x.CloseDate == null ? 0 : x.NetPL > 0 ? 1 : -1)">Status</MudTableSortLabel></MudTh>
                                 <MudTh><MudTableSortLabel SortBy="new Func<TradeRow, object>(x => x.OpenDate)">Open</MudTableSortLabel></MudTh>
                                 <MudTh><MudTableSortLabel SortBy="new Func<TradeRow, object>(x => x.CloseDate)">Close</MudTableSortLabel></MudTh>
@@ -201,7 +212,6 @@
                                                    Icon="@(_expanded.Contains(context.Id) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
                                                    OnClick="@(async () => await ToggleExecAsync(context.Id))" />
                                 </MudTd>
-                                <MudTd>@context.Id</MudTd>
                                 <MudTd>
                                     @{
                                         var s = Status(context);
@@ -251,7 +261,7 @@
                             <ChildRowContent>
                                 @if (_expanded.Contains(context.Id))
                                 {
-                                    <MudTd ColSpan="12" Class="pl-6 pr-6 pb-4 tl-childrow tl-detail-cell">
+                                    <MudTd ColSpan="11" Class="pl-6 pr-6 pb-4 tl-childrow tl-detail-cell">
                                         @if (_execLoading.Contains(context.Id))
                                         {
                                             <MudProgressLinear Indeterminate="true" />
@@ -348,7 +358,6 @@
     private bool _loading;
     private DashboardVm? _vm;
 
-    // ── Lifecycle ─────────────────────────────────────────────────
     protected override async Task OnInitializedAsync()
     {
         AppState.OnChange += OnAppStateChanged;
@@ -378,7 +387,6 @@
         finally { _loading = false; }
     }
 
-    // ── Row click (avoid generic in Razor markup) ─────────────────
     private EventCallback<TableRowClickEventArgs<TradeRow>> _rowClickCb;
 
     protected override void OnInitialized()
@@ -387,7 +395,6 @@
             new Action<TableRowClickEventArgs<TradeRow>>(args => _ = OpenDetailsAsync(args.Item)));
     }
 
-    // ── Status ────────────────────────────────────────────────────
     private static string Status(TradeRow g)
     {
         if (g.CloseDate is null) return "OPEN";
@@ -396,7 +403,6 @@
         return "FLAT";
     }
 
-    // ── Expand / executions ───────────────────────────────────────
     private readonly HashSet<long> _expanded = new();
     private readonly Dictionary<long, List<ExecutionRowDto>> _execCache = new();
     private readonly HashSet<long> _execLoading = new();
@@ -423,7 +429,6 @@
         finally { _execLoading.Remove(trade.Id); }
     }
 
-    // ── Sparkline backing fields ──────────────────────────────────
     private double[] _sparkPf = Array.Empty<double>();
     private double[] _donutWinLoss = Array.Empty<double>();
 
@@ -440,8 +445,7 @@
         var wins = closed.Count(t => t.NetPL > 0m);
         var losses = closed.Count(t => t.NetPL < 0m);
         _donutWinLoss = new double[] { Math.Max(wins, 0.001), Math.Max(losses, 0.001) };
-        var pfAll = CumulativeProfitFactor(ordered).ToArray();
-        _sparkPf = pfAll.TakeLast(30).ToArray();
+        _sparkPf = CumulativeProfitFactor(ordered).TakeLast(30).ToArray();
     }
 
     static IEnumerable<double> CumulativeProfitFactor(List<TradeRow> ordered)
@@ -481,7 +485,6 @@
         return r2 > r1 ? 1 : r2 < r1 ? -1 : 0;
     }
 
-    // ── Filters ───────────────────────────────────────────────────
     private string _filterRange = "all";
     private string _filterStatus = "all";
     private string _filterSymbol = "all";
@@ -545,7 +548,6 @@
         }
     }
 
-    // ── Filtered KPIs ─────────────────────────────────────────────
     private decimal FilteredGrossReturn => FilteredTrades.Sum(t => t.ReturnGross);
     private decimal FilteredNetPL => FilteredTrades.Sum(t => t.NetPL);
     private decimal FilteredAvgPL => FilteredTrades.Count == 0 ? 0 : FilteredTrades.Average(t => t.NetPL);
@@ -598,8 +600,7 @@
             var wins = closed.Count(t => t.NetPL > 0);
             var losses = closed.Count(t => t.NetPL < 0);
             var total = Math.Max(wins + losses, 1);
-            var min = total * 0.02;
-            return new double[] { Math.Max(wins, min), Math.Max(losses, min) };
+            return new double[] { Math.Max(wins, 0.001), Math.Max(losses, 0.001) };
         }
     }
 

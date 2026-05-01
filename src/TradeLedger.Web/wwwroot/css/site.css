@@ -981,3 +981,59 @@ KPI Donut – kill legend completely
     overflow: visible !important;
     text-overflow: unset !important;
 }
+/* ── Compact filter bar ── */
+.tl-filter-bar .mud-input-outlined .mud-input {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+
+.tl-filter-bar .mud-select,
+.tl-filter-bar .mud-input-control {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.tl-filter-bar .mud-input-label-inputcontrol {
+    top: 8px !important;
+}
+
+.tl-filter-chip {
+    min-width: 110px;
+    max-width: 150px;
+}
+    /* ── Filter bar compact ── */
+    /*.tl-filter-chip .mud-input-slot {
+        min-height: 40px !important;
+    }
+
+    .tl-filter-chip .mud-select-input {
+        font-size: 0.82rem !important;
+    }
+
+    .tl-filter-chip label {
+        font-size: 0.78rem !important;
+    }*/
+
+/* ── Filter bar compact ── */
+.tl-filter-bar .mud-input-control {
+    margin: 0 !important;
+}
+
+.tl-filter-bar .mud-input-outlined {
+    height: 40px !important;
+}
+
+    .tl-filter-bar .mud-input-outlined .mud-input {
+        padding: 8px 14px !important;
+        font-size: 0.82rem !important;
+    }
+
+.tl-filter-bar .mud-input-label-outlined {
+    font-size: 0.78rem !important;
+    top: 1px !important;
+}
+
+.tl-filter-bar .mud-input-label-inputcontrol {
+    font-size: 0.78rem !important;
+}
+
