@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using TradeLedger.Data;
 using TradeLedger.Web.Services;
@@ -46,18 +46,34 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-app.MapGet("/schwab/callback", async (HttpContext context, SchwabOAuthService oauth) =>
+app.MapGet("/schwab/callback", (HttpContext context) =>
 {
     var code = context.Request.Query["code"].ToString();
     var error = context.Request.Query["error"].ToString();
+
     if (!string.IsNullOrWhiteSpace(error))
-        return Results.Redirect($"/import?schwab_error={Uri.EscapeDataString(error)}");
+        return Results.Content(
+            $"<html><body style='font-family:sans-serif;padding:40px'>" +
+            $"<h2>❌ Error: {error}</h2></body></html>", "text/html");
+
     if (string.IsNullOrWhiteSpace(code))
-        return Results.Redirect("/import?schwab_error=no_code");
-    var success = await oauth.ExchangeCodeForTokensAsync(code);
-    return success
-        ? Results.Redirect("/import?schwab_connected=true")
-        : Results.Redirect("/import?schwab_error=token_exchange_failed");
+        return Results.Content(
+            "<html><body style='font-family:sans-serif;padding:40px'>" +
+            "<h2>❌ No code received</h2></body></html>", "text/html");
+
+    return Results.Content($"""
+        <html><body style='font-family:sans-serif;padding:40px;max-width:700px;margin:auto'>
+        <h2>✅ Almost there!</h2>
+        <p>Copy the URL from your browser address bar and paste it into TradeLedger on your local machine.</p>
+        <p>The URL should look like:<br/>
+        <code>https://tradeledger-production.up.railway.app/schwab/callback?code=...</code></p>
+        <hr/>
+        <p><strong>Your auth code (expires in 30 seconds!):</strong></p>
+        <textarea rows='3' style='width:100%;font-size:11px'>{code}</textarea>
+        <p>Go to <a href='http://localhost:7179/import'>localhost:7179/import</a> 
+        and paste the full URL into Step 2.</p>
+        </body></html>
+    """, "text/html");
 });
 
 app.MapBlazorHub();
