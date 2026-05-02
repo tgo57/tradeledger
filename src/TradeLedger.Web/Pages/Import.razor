@@ -411,7 +411,7 @@
                 return;
             }
 
-            var success = await SchwabOAuth.ExchangeCodeForTokensAsync(code);
+            var (success, error) = await SchwabOAuth.ExchangeCodeForTokensAsync(code);
             if (success)
             {
                 _callbackUrl = "";
@@ -420,7 +420,7 @@
             }
             else
             {
-                Snackbar.Add("Token exchange failed. Try connecting again.", Severity.Error);
+                Snackbar.Add($"Token exchange failed: {error}", Severity.Error);
             }
         }
         catch (Exception ex)

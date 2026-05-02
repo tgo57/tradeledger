@@ -54,11 +54,9 @@ public sealed class SchwabOAuthService
     }
 
     /// <summary>Exchange the authorization code (from callback) for tokens.</summary>
-    public async Task<bool> ExchangeCodeForTokensAsync(string code)
+    public async Task<(bool Success, string Error)> ExchangeCodeForTokensAsync(string code)
     {
         var client = _httpFactory.CreateClient();
-
-        // Basic auth header: base64(clientId:clientSecret)
         var creds = Convert.ToBase64String(
             Encoding.ASCII.GetBytes($"{ClientId}:{ClientSecret}"));
         client.DefaultRequestHeaders.Authorization =
@@ -66,16 +64,26 @@ public sealed class SchwabOAuthService
 
         var body = new FormUrlEncodedContent(new[]
         {
-            new KeyValuePair<string,string>("grant_type",   "authorization_code"),
-            new KeyValuePair<string,string>("code",         code),
-            new KeyValuePair<string,string>("redirect_uri", CallbackUrl),
-        });
+        new KeyValuePair<string,string>("grant_type",   "authorization_code"),
+        new KeyValuePair<string,string>("code",         code),
+        new KeyValuePair<string,string>("redirect_uri", CallbackUrl),
+    });
 
         var resp = await client.PostAsync(TokenUrl, body);
-        if (!resp.IsSuccessStatusCode) return false;
-
         var json = await resp.Content.ReadAsStringAsync();
-        return ParseAndSaveTokens(json);
+
+        if (!resp.IsSuccessStatusCode)
+        {
+            var errorBody = await resp.Content.ReadAsStringAsync();
+            await File.WriteAllTextAsync(@"C:\temp\schwab_error.txt",
+                $"Status: {(int)resp.StatusCode}\r\nBody: {errorBody}\r\nCode: {code}\r\nRedirectUri: {CallbackUrl}");
+            return (false, $"HTTP {(int)resp.StatusCode} - check C:\\temp\\schwab_error.txt");
+        }
+
+
+
+        var ok = ParseAndSaveTokens(json);
+        return (ok, ok ? "" : $"Parse failed. Response: {json}");
     }
 
     /// <summary>Use the refresh token to get a new access token.</summary>
