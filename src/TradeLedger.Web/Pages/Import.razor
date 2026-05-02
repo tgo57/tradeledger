@@ -10,6 +10,8 @@
 @inject SchwabSyncService SchwabSync
 @inject NavigationManager Nav
 @inject ISnackbar Snackbar
+@inject TastyTradeApiService TastyApi
+
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
     <MudText Typo="Typo.h5" Class="mb-4">Import Trades</MudText>
@@ -180,6 +182,7 @@
                         <MudSelectItem Value="@("Tasty2")">Tasty2</MudSelectItem>
                     </MudSelect>
 
+                    @* ── CSV Upload ── *@
                     <MudText Typo="Typo.subtitle2">Upload Transaction History CSV</MudText>
                     <MudText Typo="Typo.caption" Color="Color.Secondary">
                         Download from tastytrade: History → Transaction History → Export CSV
@@ -204,7 +207,6 @@
                             }
                             else
                             {
-
                                 <span>Import tastytrade CSV</span>
                             }
                         </MudButton>
@@ -213,13 +215,87 @@
                     @if (_tastyResult != null)
                     {
                         <MudAlert Severity="@(_tastyResult.Errors.Any() ? Severity.Warning : Severity.Success)">
-                            ✅ @_tastyResult.Inserted inserted &nbsp;|&nbsp; ⏭ @_tastyResult.Skipped skipped
+                            @_tastyResult.Inserted inserted &nbsp;|&nbsp; @_tastyResult.Skipped skipped
+                            @if (_tastyResult.Errors.Any())
+                            {
+                                <br />
+                                @foreach (var e in _tastyResult.Errors.Take(5))
+                                {
+                                    <div>@e</div>
+                                }
+                            }
+                        </MudAlert>
+                    }
+
+                    @* ── API Auto-Sync ── *@
+                    <MudDivider />
+                    <MudText Typo="Typo.subtitle2">Auto-Sync (API)</MudText>
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        Fetches option trades directly from tastytrade. Duplicates are skipped automatically.
+                    </MudText>
+
+                    @* Quick-select preset buttons *@
+                    <MudStack Row="true" Spacing="1" Justify="Justify.FlexStart">
+                        @foreach (var preset in _syncPresets)
+                        {
+                            <MudButton Variant="@(_tastySyncDays == preset.Days ? Variant.Filled : Variant.Outlined)"
+                                       Color="Color.Secondary"
+                                       Size="Size.Small"
+                                       OnClick="@(() => ApplySyncPreset(preset.Days))">
+                                @preset.Label
+                            </MudButton>
+                        }
+                    </MudStack>
+
+                    @* Custom date range *@
+                    <MudStack Row="true" Spacing="2">
+                        <MudDatePicker Label="From"
+                                       @bind-Date="_tastySyncFrom"
+                                       Variant="Variant.Outlined"
+                                       DateFormat="MM/dd/yyyy"
+                                       MaxDate="DateTime.Today"
+                                       Style="width:100%" />
+                        <MudDatePicker Label="To"
+                                       @bind-Date="_tastySyncTo"
+                                       Variant="Variant.Outlined"
+                                       DateFormat="MM/dd/yyyy"
+                                       MaxDate="DateTime.Today"
+                                       Style="width:100%" />
+                    </MudStack>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary"
+                               StartIcon="@Icons.Material.Filled.Sync"
+                               OnClick="SyncTasty" Disabled="_tastySyncing" FullWidth="true">
+                        @if (_tastySyncing)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                            <span>Syncing...</span>
+                        }
+                        else
+                        {
+                            <span>Sync @(_tastySyncDays > 0 ? $"Last {_tastySyncDays} Days" : "Selected Range")</span>
+                        }
+                    </MudButton>
+
+                    @if (_tastySyncResult != null)
+                    {
+                        <MudAlert Severity="@(_tastySyncResult.Errors.Any() ? Severity.Warning : Severity.Success)">
+                            @_tastySyncResult.Inserted inserted &nbsp;|&nbsp; @_tastySyncResult.Skipped skipped
+                            @if (_tastySyncResult.Errors.Any())
+                            {
+                                <br />
+                                @foreach (var e in _tastySyncResult.Errors.Take(5))
+                                {
+                                    <div>@e</div>
+                                }
+                            }
                         </MudAlert>
                     }
 
                 </MudStack>
             </MudPaper>
         </MudItem>
+
 
     </MudGrid>
 
@@ -380,6 +456,47 @@
     private bool _clearing;
     private ClearAccountService.ClearResult? _clearResult;
 
+    private bool _tastySyncing;
+    private TastyTradeImporter.ImportResult? _tastySyncResult;
+
+    // Date range for sync
+    private DateTime? _tastySyncFrom = DateTime.Today.AddDays(-30);
+    private DateTime? _tastySyncTo = DateTime.Today;
+    private int _tastySyncDays = 30; // tracks which preset is active (0 = custom)
+
+    // Preset options shown as quick-select buttons
+    private record SyncPreset(string Label, int Days);
+    private readonly List<SyncPreset> _syncPresets =
+    [
+        new("30 Days",  30),
+        new("60 Days",  60),
+        new("90 Days",  90),
+        new("6 Months", 180),
+        new("1 Year",   365),
+    ];
+
+    // When a preset button is clicked, update dates and track active preset
+    private void ApplySyncPreset(int days)
+    {
+        _tastySyncDays = days;
+        _tastySyncTo = DateTime.Today;
+        _tastySyncFrom = DateTime.Today.AddDays(-days);
+    }
+
+    // When the user manually edits a date picker, clear the active preset
+    private void OnSyncFromChanged(DateTime? value)
+    {
+        _tastySyncFrom = value;
+        _tastySyncDays = 0; // custom range
+    }
+
+    private void OnSyncToChanged(DateTime? value)
+    {
+        _tastySyncTo = value;
+        _tastySyncDays = 0; // custom range
+    }
+
+
     // ── Schwab OAuth ──────────────────────────────────────────────
     private void ConnectSchwab()
     {
@@ -515,4 +632,47 @@
         catch (Exception ex) { Snackbar.Add($"Clear failed: {ex.Message}", Severity.Error); }
         finally { _clearing = false; }
     }
+
+    private async Task SyncTasty()
+    {
+        if (_tastySyncFrom == null || _tastySyncTo == null)
+        {
+            Snackbar.Add("Please select a date range.", Severity.Warning);
+            return;
+        }
+
+        _tastySyncing = true;
+        _tastySyncResult = null;
+
+        try
+        {
+            var sessionToken = await TastyApi.GetSessionTokenAsync();
+            var accountNumber = "5WY36662"; // or pull from config: Configuration["TastyTrade:AccountNumber"]
+
+            var executions = await TastyApi.GetOptionExecutionsAsync(
+                accountNumber,
+                sessionToken,
+                since: _tastySyncFrom.Value);
+
+            // Client-side trim to the To date (API only supports start date filtering)
+            executions = executions
+                .Where(e => e.ExecutedAt.Date <= _tastySyncTo.Value.Date)
+                .ToList();
+
+            _tastySyncResult = await TastyImport.ImportFromExecutionsAsync(executions, _tastyAccount);
+
+            ImportHistory.Add(new ImportHistoryService.HistoryEntry(
+                DateTime.Now, "tastytrade", _tastyAccount,
+                $"api-sync {_tastySyncFrom:MM/dd/yy}–{_tastySyncTo:MM/dd/yy}",
+                _tastySyncResult.Inserted, _tastySyncResult.Skipped, _tastySyncResult.Errors));
+
+            Snackbar.Add($"tastytrade sync: {_tastySyncResult.Inserted} new trades", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Sync failed: {ex.Message}", Severity.Error);
+        }
+        finally { _tastySyncing = false; }
+    }
+
 }

@@ -235,6 +235,73 @@ public sealed class TastyTradeImporter
         }
     }
 
+    public async Task<ImportResult> ImportFromExecutionsAsync(List<Execution> executions, string account)
+    {
+        var inserted = 0;
+        var skipped = 0;
+        var errors = new List<string>();
+
+        // Filter to option open executions (same logic as CSV importer)
+        var optionExecs = executions
+            .Where(e => !string.IsNullOrWhiteSpace(e.Symbol) && !string.IsNullOrWhiteSpace(e.Action))
+            .Where(e => IsOptionAction(e.Action))
+            .ToList();
+
+        if (!optionExecs.Any())
+        {
+            errors.Add("No option open executions found in API response.");
+            return new ImportResult(0, 0, errors);
+        }
+
+        var groups = GroupIntoTradeGroups(optionExecs, account, errors);
+
+        foreach (var (group, legs) in groups)
+        {
+            try
+            {
+                var exists = _db.TradeGroups.Any(g =>
+                    g.Account == account &&
+                    g.Underlying == group.Underlying &&
+                    g.Expiration == group.Expiration &&
+                    g.ShortStrike == group.ShortStrike &&
+                    g.OpenDate.Date == group.OpenDate.Date);
+
+                if (exists) { skipped++; continue; }
+
+                _db.TradeGroups.Add(group);
+                await _db.SaveChangesAsync();
+
+                foreach (var exec in legs)
+                {
+                    if (string.IsNullOrWhiteSpace(exec.Fingerprint))
+                        exec.Fingerprint = MakeFingerprint(exec);
+
+                    if (_db.Executions.Any(e => e.Fingerprint == exec.Fingerprint))
+                        continue;
+
+                    _db.Executions.Add(exec);
+                    await _db.SaveChangesAsync();
+
+                    _db.TradeGroupExecutions.Add(new TradeGroupExecution
+                    {
+                        TradeGroupId = group.Id,
+                        ExecutionId = exec.Id
+                    });
+                }
+
+                await _db.SaveChangesAsync();
+                inserted++;
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Save error for {group.Underlying} {group.Expiration}: {ex.Message}");
+            }
+        }
+
+        return new ImportResult(inserted, skipped, errors);
+    }
+
+
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static bool IsOptionAction(string? action) =>

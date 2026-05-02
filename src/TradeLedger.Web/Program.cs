@@ -31,6 +31,7 @@ builder.Services.AddSingleton<SchwabOAuthService>(sp => new SchwabOAuthService(
     sp.GetRequiredService<IConfiguration>(),
     sp.GetRequiredService<IHttpClientFactory>()
 ));
+builder.Services.AddHttpClient<TastyTradeApiService>();
 builder.Services.AddScoped<SchwabSyncService>();
 
 
@@ -99,6 +100,51 @@ app.MapGet("/schwab/callback", (HttpContext context) =>
     </body></html>
 """, "text/html");
 });
+
+app.MapPost("/api/tastytrade/sync", async (
+    TastyTradeApiService apiService,
+    TastyTradeImporter importer,
+    IConfiguration config,
+    ILogger<Program> logger) =>
+{
+    try
+    {
+        var accountNumber = config["TastyTrade:AccountNumber"]
+            ?? throw new InvalidOperationException("TastyTrade:AccountNumber not configured");
+
+        // 1. Get a fresh session token via OAuth refresh
+        logger.LogInformation("TastyTrade sync: authenticating...");
+        var sessionToken = await apiService.GetSessionTokenAsync();
+
+        // 2. Fetch option executions from the API
+        logger.LogInformation("TastyTrade sync: fetching transactions for {Account}", accountNumber);
+        var executions = await apiService.GetOptionExecutionsAsync(accountNumber, sessionToken);
+
+        if (executions.Count == 0)
+            return Results.Ok(new { inserted = 0, skipped = 0, errors = new[] { "No option executions found." } });
+
+        logger.LogInformation("TastyTrade sync: {Count} executions fetched, importing...", executions.Count);
+
+        // 3. Feed into the existing importer pipeline (reuses all your grouping logic)
+        var result = await importer.ImportFromExecutionsAsync(executions, accountNumber);
+
+        logger.LogInformation("TastyTrade sync complete: {Inserted} inserted, {Skipped} skipped",
+            result.Inserted, result.Skipped);
+
+        return Results.Ok(new
+        {
+            result.Inserted,
+            result.Skipped,
+            result.Errors
+        });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "TastyTrade sync failed");
+        return Results.Problem(ex.Message);
+    }
+});
+
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
