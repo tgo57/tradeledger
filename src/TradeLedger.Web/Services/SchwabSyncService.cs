@@ -93,8 +93,8 @@ public sealed class SchwabSyncService
         }
 
         // Fetch transactions — Schwab allows up to 60 days
-        var startDate = DateTime.UtcNow.AddDays(-60).ToString("yyyy-MM-dd");
-        var endDate = DateTime.UtcNow.ToString("yyyy-MM-dd");
+        var startDate = DateTime.UtcNow.AddDays(-60).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+        var endDate = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
         var url = $"{BaseUrl}/accounts/{account.Name}/transactions" +
                    $"?startDate={startDate}&endDate={endDate}&types=TRADE";
@@ -110,6 +110,7 @@ public sealed class SchwabSyncService
         var json = await resp.Content.ReadAsStringAsync();
         var transactions = ParseTransactions(json, accountLabel, errors);
 
+        
         if (!transactions.Any())
         {
             errors.Add("No option transactions found in the last 60 days.");
@@ -123,9 +124,7 @@ public sealed class SchwabSyncService
 
         // Save via temp CSV approach — reuse existing import pipeline
         // (Convert API response to CSV format and import)
-        var csv = BuildCsvFromExecutions(transactions);
-        var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(csv));
-        var result = await _importer.ImportAsync(stream, "Schwab", accountLabel, "api-sync");
+        var result = await _importer.ImportFromExecutionsAsync(transactions, "Schwab", accountLabel);
 
         return new SyncResult(result.Inserted, result.Skipped, result.Errors);
     }
@@ -151,27 +150,52 @@ public sealed class SchwabSyncService
                     foreach (var item in items.EnumerateArray())
                     {
                         var inst = item.GetProperty("instrument");
-                        var sym = inst.TryGetProperty("symbol", out var s) ? s.GetString() : "";
 
+                        // Only process option legs
+                        var instrType = inst.TryGetProperty("assetType", out var at) ? at.GetString() : "";
+                        if (instrType != "OPTION") continue;
+
+                        // Convert OCC format to Schwab parser format
+                        var rawSym = inst.TryGetProperty("symbol", out var s) ? s.GetString() : "";
+
+                        // Temporary debug
+                        var rawAmt = item.TryGetProperty("amount", out var ra) ? ra.GetDecimal() : 0m;
+                        var rawPE = item.TryGetProperty("positionEffect", out var rpe) ? rpe.GetString() : "";
+                        System.Diagnostics.Debug.WriteLine($"OPTION: {rawSym} amt={rawAmt} effect={rawPE}");
+
+
+                        var sym = ConvertOccToParserFormat(rawSym);
+                        //var sym = inst.TryGetProperty("symbol", out var s) ? s.GetString() : "";
                         if (string.IsNullOrWhiteSpace(sym)) continue;
 
-                        var amount = item.TryGetProperty("amount", out var a) ? a.GetDecimal() : 0m;
-                        var cost = item.TryGetProperty("cost", out var c) ? c.GetDecimal() : 0m;
                         var price = item.TryGetProperty("price", out var p) ? p.GetDecimal() : 0m;
-                        var qty = item.TryGetProperty("quantity", out var q) ? q.GetDecimal() : 0m;
+                        var cost = item.TryGetProperty("cost", out var c) ? c.GetDecimal() : 0m;
+                        var amountSign = item.TryGetProperty("amount", out var a) ? a.GetDecimal() : 0m;
+                        var qty = Math.Abs(amountSign);
 
-                        var instruction = item.TryGetProperty("instruction", out var i)
-                            ? i.GetString() ?? "" : "";
+                        var positionEffect = item.TryGetProperty("positionEffect", out var pe)
+                            ? pe.GetString() ?? "" : "";
 
-                        // Map Schwab API instruction to action string
-                        var action = instruction switch
+                        // Derive action from positionEffect + sign of amount
+                        // Negative amount = Sell (credit received), Positive = Buy (debit paid)
+                        var action = (positionEffect, amountSign < 0) switch
                         {
-                            "BUY" => "Buy to Open",
-                            "SELL" => "Sell to Open",
-                            "BUY_TO_CLOSE" => "Buy to Close",
-                            "SELL_TO_CLOSE" => "Sell to Close",
-                            _ => instruction
+                            ("OPENING", true) => "Sell to Open",
+                            ("OPENING", false) => "Buy to Open",
+                            ("CLOSING", true) => "Sell to Close",
+                            ("CLOSING", false) => "Buy to Close",
+                            _ => positionEffect
                         };
+
+
+                        // In ParseTransactions, before result.Add(exec):
+                        var fp = Convert.ToHexString(
+                            System.Security.Cryptography.SHA256.HashData(
+                            System.Text.Encoding.UTF8.GetBytes(
+                            $"Schwab|{account}|{executedAt:O}|{action}|{sym}|{qty}|{price}|{cost}")));
+
+                        // Skip if already in this batch
+                        if (result.Any(e => e.Fingerprint == fp)) continue;
 
                         var exec = new Execution
                         {
@@ -183,9 +207,12 @@ public sealed class SchwabSyncService
                             Quantity = qty,
                             Price = price,
                             NetAmount = cost,
-                            Fees = Math.Abs(amount - cost),
-                            Fingerprint = "",
-                            SourceFile = "api-sync"
+                            Fees = 0m,
+                            SourceFile = "api-sync",
+                            Fingerprint = Convert.ToHexString(
+                                System.Security.Cryptography.SHA256.HashData(
+                                System.Text.Encoding.UTF8.GetBytes(
+                                $"Schwab|{account}|{executedAt:O}|{action}|{sym}|{qty}|{price}|{cost}")))
                         };
                         result.Add(exec);
                     }
@@ -204,22 +231,7 @@ public sealed class SchwabSyncService
     }
 
     /// <summary>Build a Schwab-format CSV from API executions so we can reuse the CSV importer.</summary>
-    private static string BuildCsvFromExecutions(List<Execution> executions)
-    {
-        var sb = new System.Text.StringBuilder();
-        sb.AppendLine("\"Date\",\"Action\",\"Symbol\",\"Description\",\"Quantity\",\"Price\",\"Fees & Comm\",\"Amount\"");
-
-        foreach (var e in executions)
-        {
-            var date = e.ExecutedAt.ToString("MM/dd/yyyy");
-            var price = e.Price?.ToString("F2") ?? "0.00";
-            var fees = e.Fees.ToString("F2");
-            var amt = e.NetAmount.ToString("F2");
-            sb.AppendLine($"\"{date}\",\"{e.Action}\",\"{e.Symbol}\",\"{e.Description}\",\"{e.Quantity}\",\"${price}\",\"${fees}\",\"${amt}\"");
-        }
-        return sb.ToString();
-    }
-
+   
     private HttpClient MakeClient(string accessToken)
     {
         var client = _httpFactory.CreateClient();
@@ -228,5 +240,36 @@ public sealed class SchwabSyncService
         client.DefaultRequestHeaders.Accept.Add(
             new MediaTypeWithQualityHeaderValue("application/json"));
         return client;
+    }
+
+    private static string? ConvertOccToParserFormat(string? occSymbol)
+    {
+        if (string.IsNullOrWhiteSpace(occSymbol)) return null;
+
+        // OCC format: "SPXW  260505P07130000"
+        // underlying (variable length, space padded to 6), YYMMDD, C/P, strike*1000 (8 digits)
+        var sym = occSymbol.Trim();
+
+        // Find where digits start
+        var i = 0;
+        while (i < sym.Length && !char.IsDigit(sym[i])) i++;
+
+        if (i >= sym.Length - 14) return null;
+
+        var underlying = sym[..i].Trim();
+        var dateStr = sym.Substring(i, 6);      // YYMMDD
+        var rightChar = sym[i + 6].ToString().ToUpper();
+        var strikeStr = sym.Substring(i + 7, 8);  // strike * 1000
+
+        if (!DateOnly.TryParseExact($"20{dateStr}", "yyyyMMdd",
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.None, out var exp))
+            return null;
+
+        if (!decimal.TryParse(strikeStr, out var strikeRaw)) return null;
+        var strike = strikeRaw / 1000m;
+
+        // Return in parser format: "SPXW 05/05/2026 7130.00 P"
+        return $"{underlying} {exp:MM/dd/yyyy} {strike:F2} {rightChar}";
     }
 }

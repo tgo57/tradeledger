@@ -279,6 +279,9 @@ public sealed class TastyTradeImporter
                     if (_db.Executions.Any(e => e.Fingerprint == exec.Fingerprint))
                         continue;
 
+                    if (_db.Executions.Any(e => e.Fingerprint == exec.Fingerprint))
+                        continue;
+
                     _db.Executions.Add(exec);
                     await _db.SaveChangesAsync();
 
