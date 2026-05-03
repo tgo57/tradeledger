@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using TradeLedger.Core.Models;
@@ -57,15 +58,12 @@ public sealed class TastyTradeImporter
                 return new ImportResult(0, 0, errors);
             }
 
-            // Group by order: TastyTrade CSV has no Order # in TastytradeCsvImporter output,
-            // so we cluster by time (legs executed within 60 seconds = same spread)
             var groups = GroupIntoTradeGroups(optionExecs, account, errors);
 
             foreach (var (group, legs) in groups)
             {
                 try
                 {
-                    // Duplicate check: look for existing group with same account/underlying/expiry/strike/open date
                     var exists = _db.TradeGroups.Any(g =>
                         g.Account == account &&
                         g.Underlying == group.Underlying &&
@@ -80,11 +78,9 @@ public sealed class TastyTradeImporter
 
                     foreach (var exec in legs)
                     {
-                        // Ensure fingerprint
                         if (string.IsNullOrWhiteSpace(exec.Fingerprint))
                             exec.Fingerprint = MakeFingerprint(exec);
 
-                        // Skip duplicate executions
                         if (_db.Executions.Any(e => e.Fingerprint == exec.Fingerprint))
                             continue;
 
@@ -118,29 +114,17 @@ public sealed class TastyTradeImporter
     // ── Trade grouping ────────────────────────────────────────────────────────
 
     private static List<(TradeGroup Group, List<Execution> Legs)> GroupIntoTradeGroups(
-    List<Execution> executions,
-    string account,
-    List<string> errors)
+        List<Execution> executions,
+        string account,
+        List<string> errors)
     {
         var result = new List<(TradeGroup, List<Execution>)>();
-        var sorted = executions.OrderBy(e => e.ExecutedAt).ToList();
 
-        // Cluster legs executed within 60 seconds = one spread order
-        var clusters = new List<List<Execution>>();
-        var current = new List<Execution>();
-
-        foreach (var exec in sorted)
-        {
-            if (current.Count == 0 ||
-                Math.Abs((exec.ExecutedAt - current.Last().ExecutedAt).TotalSeconds) < 60)
-                current.Add(exec);
-            else
-            {
-                clusters.Add(new List<Execution>(current));
-                current = new List<Execution> { exec };
-            }
-        }
-        if (current.Any()) clusters.Add(current);
+        // Cluster by trade date — all legs of a spread open on the same day
+        var clusters = executions
+            .GroupBy(e => e.ExecutedAt.Date)
+            .Select(g => g.ToList())
+            .ToList();
 
         foreach (var cluster in clusters)
         {
@@ -163,7 +147,6 @@ public sealed class TastyTradeImporter
 
             var first = parsed.OrderBy(x => x.exec.ExecutedAt).First();
             var openDate = first.exec.ExecutedAt;
-            var netPL = cluster.Sum(e => e.NetAmount);
 
             DateTime? closeDate = null;
             if (first.occ!.Expiration.ToDateTime(TimeOnly.MinValue) < DateTime.Today)
@@ -181,7 +164,8 @@ public sealed class TastyTradeImporter
                 Expiration = first.occ.Expiration,
                 OpenDate = openDate,
                 CloseDate = closeDate,
-                NetPL = netPL,
+                NetPL = 0m,
+                GrossReturn = 0m,
                 Setup = first.occ.Right == "Put" ? "BullPutSpread" : "BearCallSpread"
             };
 
@@ -206,17 +190,15 @@ public sealed class TastyTradeImporter
 
         try
         {
-            // Underlying is left-padded to 6 chars, then 6-digit date, 1 char right, 8-digit strike
-            // Find where digits start (after underlying letters)
             var i = 0;
             while (i < symbol.Length && !char.IsDigit(symbol[i])) i++;
 
             if (i >= symbol.Length - 14) return null;
 
             var underlying = symbol[..i].Trim();
-            var dateStr = symbol.Substring(i, 6);      // YYMMDD
+            var dateStr = symbol.Substring(i, 6);
             var rightChar = symbol[i + 6].ToString().ToUpper();
-            var strikeStr = symbol.Substring(i + 7, 8);  // strike * 1000
+            var strikeStr = symbol.Substring(i + 7, 8);
 
             if (!DateOnly.TryParseExact($"20{dateStr}", "yyyyMMdd",
                 System.Globalization.CultureInfo.InvariantCulture,
@@ -241,7 +223,6 @@ public sealed class TastyTradeImporter
         var skipped = 0;
         var errors = new List<string>();
 
-        // Filter to option open executions (same logic as CSV importer)
         var optionExecs = executions
             .Where(e => !string.IsNullOrWhiteSpace(e.Symbol) && !string.IsNullOrWhiteSpace(e.Action))
             .Where(e => IsOptionAction(e.Action))
@@ -249,13 +230,17 @@ public sealed class TastyTradeImporter
 
         if (!optionExecs.Any())
         {
-            errors.Add("No option open executions found in API response.");
+            errors.Add("No option executions found in API response.");
             return new ImportResult(0, 0, errors);
         }
 
-        var groups = GroupIntoTradeGroups(optionExecs, account, errors);
+        var openingLegs = optionExecs.Where(e => IsOpen(e.Action)).ToList();
+        var closingLegs = optionExecs.Where(e => IsClose(e.Action) || IsAssignmentOrExpiry(e.Action)).ToList();
 
-        foreach (var (group, legs) in groups)
+        // ── Pass 1: Opening legs → create new TradeGroups ─────────────────────
+        var openGroups = GroupIntoTradeGroups(openingLegs, account, errors);
+
+        foreach (var (group, legs) in openGroups)
         {
             try
             {
@@ -277,10 +262,22 @@ public sealed class TastyTradeImporter
                         exec.Fingerprint = MakeFingerprint(exec);
 
                     if (_db.Executions.Any(e => e.Fingerprint == exec.Fingerprint))
+                    {
+                        // Execution already exists — link it to this group if not already linked
+                        var existingExec = _db.Executions.First(e => e.Fingerprint == exec.Fingerprint);
+                        bool alreadyLinked = _db.TradeGroupExecutions
+                            .Any(l => l.ExecutionId == existingExec.Id && l.TradeGroupId == group.Id);
+                        if (!alreadyLinked)
+                        {
+                            _db.TradeGroupExecutions.Add(new TradeGroupExecution
+                            {
+                                TradeGroupId = group.Id,
+                                ExecutionId = existingExec.Id
+                            });
+                            await _db.SaveChangesAsync();
+                        }
                         continue;
-
-                    if (_db.Executions.Any(e => e.Fingerprint == exec.Fingerprint))
-                        continue;
+                    }
 
                     _db.Executions.Add(exec);
                     await _db.SaveChangesAsync();
@@ -301,15 +298,93 @@ public sealed class TastyTradeImporter
             }
         }
 
+        // ── Pass 2: Closing/assignment/expiry legs → match existing groups ────
+        var closeGroups = GroupIntoTradeGroups(closingLegs, account, errors);
+        var updatedGroupIds = new HashSet<long>();
+
+        foreach (var (_, legs) in closeGroups)
+        {
+            try
+            {
+                var occ = TryParseOcc(legs[0].Symbol);
+                if (occ == null) continue;
+
+                var matchingGroup = _db.TradeGroups
+                    .Where(g =>
+                        g.Account == account &&
+                        g.Underlying == occ.Underlying &&
+                        g.Expiration == occ.Expiration &&
+                        g.Right == occ.Right)
+                    .OrderByDescending(g => g.OpenDate)
+                    .FirstOrDefault();
+
+                if (matchingGroup == null)
+                {
+                    errors.Add($"No trade found to close: {legs[0].Symbol}");
+                    continue;
+                }
+
+                foreach (var exec in legs)
+                {
+                    if (string.IsNullOrWhiteSpace(exec.Fingerprint))
+                        exec.Fingerprint = MakeFingerprint(exec);
+
+                    if (_db.Executions.Any(e => e.Fingerprint == exec.Fingerprint))
+                        continue;
+
+                    _db.Executions.Add(exec);
+                    await _db.SaveChangesAsync();
+
+                    _db.TradeGroupExecutions.Add(new TradeGroupExecution
+                    {
+                        TradeGroupId = matchingGroup.Id,
+                        ExecutionId = exec.Id
+                    });
+                }
+
+                if (matchingGroup.CloseDate == null)
+                    matchingGroup.CloseDate = legs.Max(l => l.ExecutedAt);
+
+                updatedGroupIds.Add(matchingGroup.Id);
+                await _db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"Close group error: {ex.Message}");
+            }
+        }
+
+        // ── Recalculate NetPL once after ALL closing legs are linked ──────────
+        foreach (var groupId in updatedGroupIds)
+        {
+            var allExecIds = _db.TradeGroupExecutions
+                .Where(l => l.TradeGroupId == groupId)
+                .Select(l => l.ExecutionId)
+                .ToList();
+
+            var total = _db.Executions
+                .Where(e => allExecIds.Contains(e.Id))
+                .AsEnumerable()
+                .Sum(e => e.NetAmount);
+
+            await _db.Database.ExecuteSqlRawAsync(
+                "UPDATE TradeGroups SET NetPL = {0}, GrossReturn = {1} WHERE Id = {2}",
+                total, total, groupId);
+        }
+
         return new ImportResult(inserted, skipped, errors);
     }
-
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
     private static bool IsOptionAction(string? action) =>
-    action?.Contains("_TO_OPEN", StringComparison.OrdinalIgnoreCase) == true ||
-    action?.Contains("to open", StringComparison.OrdinalIgnoreCase) == true;
+        action?.Contains("_TO_OPEN", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("to open", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("_TO_CLOSE", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("to close", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("EXPIRATION", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("EXERCISE", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("ASSIGNMENT", StringComparison.OrdinalIgnoreCase) == true;
 
     private static bool IsSell(string? action) =>
         action?.Contains("Sell", StringComparison.OrdinalIgnoreCase) == true ||
@@ -326,4 +401,17 @@ public sealed class TastyTradeImporter
         var hash = SHA256.HashData(bytes);
         return Convert.ToHexString(hash);
     }
+
+    private static bool IsOpen(string? action) =>
+        action?.Contains("_TO_OPEN", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("to open", StringComparison.OrdinalIgnoreCase) == true;
+
+    private static bool IsClose(string? action) =>
+        action?.Contains("_TO_CLOSE", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("to close", StringComparison.OrdinalIgnoreCase) == true;
+
+    private static bool IsAssignmentOrExpiry(string? action) =>
+        action?.Contains("EXPIRATION", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("EXERCISE", StringComparison.OrdinalIgnoreCase) == true ||
+        action?.Contains("ASSIGNMENT", StringComparison.OrdinalIgnoreCase) == true;
 }

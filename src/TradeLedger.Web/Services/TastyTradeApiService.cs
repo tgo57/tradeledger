@@ -27,10 +27,6 @@ public sealed class TastyTradeApiService
 
     // ── Auth ──────────────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Exchange a refresh token for a new session token.
-    /// Store the refresh token in appsettings (it never expires).
-    /// </summary>
     public async Task<string> GetSessionTokenAsync()
     {
         var clientSecret = _config["TastyTrade:ClientSecret"] ?? throw new InvalidOperationException("TastyTrade:ClientSecret not configured");
@@ -64,10 +60,6 @@ public sealed class TastyTradeApiService
 
     // ── Transactions ──────────────────────────────────────────────────────────
 
-    /// <summary>
-    /// Fetch all option trade executions for the given account since a start date.
-    /// Maps to Execution objects compatible with TastyTradeImporter.
-    /// </summary>
     public async Task<List<Execution>> GetOptionExecutionsAsync(
         string accountNumber,
         string sessionToken,
@@ -79,7 +71,6 @@ public sealed class TastyTradeApiService
         _http.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", sessionToken);
 
-        // Paginate — TastyTrade returns max 250 per page
         var allItems = new List<TastyTransaction>();
         var pageOffset = 0;
         const int pageSize = 250;
@@ -110,17 +101,22 @@ public sealed class TastyTradeApiService
             _logger.LogInformation("TastyTrade: fetched {Count} transactions (offset {Offset})",
                 items.Count, pageOffset);
 
-            // Stop if we got fewer than a full page
             if (items.Count < pageSize) break;
             pageOffset += pageSize;
         }
 
-        // Filter to fills only and map to Execution model
         return allItems
-            .Where(t => t.TransactionType == "Trade" && t.TransactionSubType == "Buy to Open" ||
-                        t.TransactionType == "Trade" && t.TransactionSubType == "Sell to Open" ||
-                        t.TransactionType == "Trade" && t.TransactionSubType == "Buy to Close" ||
-                        t.TransactionType == "Trade" && t.TransactionSubType == "Sell to Close")
+            .Where(t =>
+                (t.TransactionType == "Trade" &&
+                    (t.TransactionSubType == "Buy to Open" ||
+                     t.TransactionSubType == "Sell to Open" ||
+                     t.TransactionSubType == "Buy to Close" ||
+                     t.TransactionSubType == "Sell to Close"))
+                ||
+                (t.TransactionType == "Receive Deliver" &&
+                    (t.TransactionSubType == "Cash Settled Exercise" ||
+                     t.TransactionSubType == "Cash Settled Assignment" ||
+                     t.TransactionSubType == "Expiration")))
             .Select(t => MapToExecution(t, accountNumber))
             .Where(e => e != null)
             .Select(e => e!)
@@ -133,11 +129,21 @@ public sealed class TastyTradeApiService
     {
         if (string.IsNullOrWhiteSpace(t.Symbol)) return null;
 
-        var action = t.TransactionSubType?
-            .Replace(" ", "_")
-            .ToUpper() ?? "UNKNOWN";
+        var action = t.TransactionType switch
+        {
+            "Receive Deliver" => t.TransactionSubType switch
+            {
+                "Cash Settled Exercise" => "SELL_TO_CLOSE",
+                "Cash Settled Assignment" => "BUY_TO_CLOSE",
+                "Expiration" => "EXPIRATION",
+                _ => t.TransactionSubType?.ToUpper() ?? "UNKNOWN"
+            },
+            _ => t.TransactionSubType?
+                    .Replace(" ", "_")
+                    .ToUpper()
+                 ?? "UNKNOWN"
+        };
 
-        // Apply credit/debit sign to net value
         var netRaw = decimal.TryParse(t.NetValue, out var nv) ? nv : 0m;
         var price = decimal.TryParse(t.Price, out var p) ? p : 0m;
         var quantity = decimal.TryParse(t.Quantity, out var q) ? q : 0m;
