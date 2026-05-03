@@ -153,17 +153,14 @@ a, .btn-link {
 /* Table sizing */
 .tl-trades-table {
     width: 100%;
-    table-layout: fixed;
+    table-layout: auto;
 }
 
-
-/* Prevent wrapping inside cells */
-.tl-trades-table th,
-.tl-trades-table td {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
+    /* Prevent wrapping inside cells */
+    .tl-trades-table th,
+    .tl-trades-table td {
+        white-space: nowrap;
+    }
 /* Column widths (tweak as desired) */
 .tl-col-putcall {
     width: 20px;
@@ -1036,4 +1033,27 @@ KPI Donut – kill legend completely
 .tl-filter-bar .mud-input-label-inputcontrol {
     font-size: 0.78rem !important;
 }
+/* ── Trades table: no horizontal scroll ── */
+.tl-table-scroll {
+    overflow-x: hidden;
+}
+
+.tl-trades-table {
+    table-layout: auto;
+    min-width: unset !important;
+}
+
+    .tl-trades-table th,
+    .tl-trades-table td {
+        white-space: nowrap;
+        overflow: visible !important;
+        text-overflow: unset !important;
+        min-width: unset !important;
+    }
+
+        .tl-trades-table th:last-child,
+        .tl-trades-table td:last-child {
+            min-width: unset !important;
+            overflow: visible !important;
+        }
 
