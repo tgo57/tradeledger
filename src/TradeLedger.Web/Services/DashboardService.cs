@@ -103,10 +103,8 @@ public sealed class DashboardService
             decimal grossBeforeFees = 0m;
             if (broker.Equals("TastyTrade", StringComparison.OrdinalIgnoreCase))
             {
-                // TastyTrade: Total column already has correct signed dollar amounts
-                // Sum of open legs = gross credit/debit before close
-                var openLegs = ex.Where(x => IsOpen(x.Action)).ToList();
-                grossBeforeFees = openLegs.Sum(x => x.NetAmount);
+                // TastyTrade: sum all execution net amounts (includes cash settlements)
+                grossBeforeFees = ex.Sum(x => x.NetAmount);
             }
             else
             {
