@@ -101,6 +101,10 @@ public sealed class TastyTradeApiService
             _logger.LogInformation("TastyTrade: fetched {Count} transactions (offset {Offset})",
                 items.Count, pageOffset);
 
+            if (items.Any(i => i.TransactionType == "Trade"))
+                _logger.LogInformation("Sample Trade JSON: {Json}",
+                    JsonSerializer.Serialize(items.First(i => i.TransactionType == "Trade")));
+
             if (items.Count < pageSize) break;
             pageOffset += pageSize;
         }
@@ -148,6 +152,14 @@ public sealed class TastyTradeApiService
         var price = decimal.TryParse(t.Price, out var p) ? p : 0m;
         var quantity = decimal.TryParse(t.Quantity, out var q) ? q : 0m;
         var netAmount = t.NetValueEffect == "Debit" ? -netRaw : netRaw;
+        decimal fees = 0m;
+        if (t.TransactionType == "Trade")
+        {
+            var grossAmount = price * quantity * 100m;
+            fees = Math.Round(Math.Abs(Math.Abs(grossAmount) - Math.Abs(netAmount)), 2);
+            if (fees > 5m) fees = 0m; // sanity cap — fees should never exceed $5/leg
+        }
+
 
         return new Execution
         {
@@ -157,6 +169,7 @@ public sealed class TastyTradeApiService
             Quantity = quantity,
             Price = price,
             NetAmount = netAmount,
+            Fees = fees,
             ExecutedAt = t.ExecutedAt ?? DateTime.UtcNow,
             Broker = "TastyTrade",
             Fingerprint = MakeFingerprint(account, t),
