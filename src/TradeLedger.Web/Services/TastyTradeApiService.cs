@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using MudBlazor.Charts;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -61,9 +62,9 @@ public sealed class TastyTradeApiService
     // ── Transactions ──────────────────────────────────────────────────────────
 
     public async Task<List<Execution>> GetOptionExecutionsAsync(
-        string accountNumber,
-        string sessionToken,
-        DateTime? since = null)
+      string accountNumber,
+      string sessionToken,
+      DateTime? since = null)
     {
         var fromDate = since ?? DateTime.UtcNow.AddMonths(-6);
         var fromStr = fromDate.ToString("yyyy-MM-dd");
@@ -100,16 +101,13 @@ public sealed class TastyTradeApiService
 
             _logger.LogInformation("TastyTrade: fetched {Count} transactions (offset {Offset})",
                 items.Count, pageOffset);
-
-            if (items.Any(i => i.TransactionType == "Trade"))
-                _logger.LogInformation("Sample Trade JSON: {Json}",
-                    JsonSerializer.Serialize(items.First(i => i.TransactionType == "Trade")));
-
+                    
             if (items.Count < pageSize) break;
             pageOffset += pageSize;
         }
 
-        return allItems
+        // Filter to relevant transaction types
+        var filtered = allItems
             .Where(t =>
                 (t.TransactionType == "Trade" &&
                     (t.TransactionSubType == "Buy to Open" ||
@@ -121,11 +119,23 @@ public sealed class TastyTradeApiService
                     (t.TransactionSubType == "Cash Settled Exercise" ||
                      t.TransactionSubType == "Cash Settled Assignment" ||
                      t.TransactionSubType == "Expiration")))
+            .ToList();
+
+        // TastyTrade API returns each transaction twice with sequential IDs — deduplicate
+        var deduped = filtered
+            .GroupBy(t => $"{t.ExecutedAt:yyyy-MM-ddTHH:mm:ss}|{t.Symbol}|{t.TransactionSubType}|{t.Quantity}|{t.Price}")
+            .Select(g => g.OrderBy(t => t.Id).First())
+            .ToList();
+
+        _logger.LogInformation("TastyTrade dedup: {Before} → {After} transactions", filtered.Count, deduped.Count);
+
+        return deduped
             .Select(t => MapToExecution(t, accountNumber))
             .Where(e => e != null)
             .Select(e => e!)
             .ToList();
     }
+
 
     // ── Mapping ───────────────────────────────────────────────────────────────
 
@@ -178,7 +188,9 @@ public sealed class TastyTradeApiService
 
     private static string MakeFingerprint(string account, TastyTransaction t)
     {
-        var s = $"TastyTrade|{account}|{t.ExecutedAt:O}|{t.TransactionSubType}|{t.Symbol}|{t.Quantity}|{t.Price}|{t.NetValue}";
+        // Include t.Id to uniquely identify each TastyTrade transaction
+        // This ensures the GroupBy dedup key matches the fingerprint dedup
+        var s = $"TastyTrade|{account}|{t.Id}|{t.ExecutedAt:O}|{t.TransactionSubType}|{t.Symbol}|{t.Quantity}|{t.Price}|{t.NetValue}";
         var bytes = Encoding.UTF8.GetBytes(s);
         var hash = System.Security.Cryptography.SHA256.HashData(bytes);
         return Convert.ToHexString(hash);
